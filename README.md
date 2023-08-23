@@ -10,6 +10,7 @@ Plugin only works with QGIS 3 and Python version `>=3.5`
 
 
 
+
 ## Usage
 
 
@@ -17,3 +18,16 @@ Plugin only works with QGIS 3 and Python version `>=3.5`
 ## Development
 
 ### Set up an environment
+
+Open the Python Console within QGIS, and then enter the following command to install sentinelsat in the QGIS Python environment (one command after another):
+
+```bash
+import subprocess
+subprocess.call(['pip', 'install', 'sentinelsat'])
+```
+
+Try importing sentinelsat again:
+
+```bash
+import sentinelsat
+```
