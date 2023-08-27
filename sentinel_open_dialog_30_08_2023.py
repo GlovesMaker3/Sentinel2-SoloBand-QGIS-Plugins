@@ -56,9 +56,6 @@ import osr
 from osgeo import ogr
 from qgis.core import QgsVectorLayer, QgsProject
 
-import json
-
-
 # This loads your .ui file so that PyQt can populate your plugin with the elements from Qt Designer
 FORM_CLASS, _ = uic.loadUiType(os.path.join(
     os.path.dirname(__file__), 'sentinel_open_dialog_base.ui'))
@@ -301,6 +298,8 @@ class SentinelOpenDialog(QtWidgets.QDialog, FORM_CLASS):
             print("Nie udało się otworzyć pliku SHP.")
 
 
+
+
     # def process_geojson(self, geojson_path):
     #     # Wczytaj nową warstwę GeoJSON do QGIS
     #     new_layer = QgsVectorLayer(geojson_path, "Nowa warstwa GeoJSON", "ogr")
@@ -411,20 +410,6 @@ class SentinelOpenDialog(QtWidgets.QDialog, FORM_CLASS):
         print('wybieraniewarstwzmapy(self, index):')
         selected_layer_name = self.cblista.currentText()  # Get the name of the selected layer
         print(f'Wybrana warstwa: {selected_layer_name}')
-
-    # def wybieraniewarstwzmapy(self, index):
-    #     print('wybieraniewarstwzmapy(self, index):')
-    #     selected_layer_name = self.cblista.currentText()  # Get the name of the selected layer
-    #     print(f'Wybrana warstwa: {selected_layer_name}')
-    #
-    #     selected_layer = QgsProject.instance().mapLayersByName(selected_layer_name)[0]
-    #     if selected_layer.geometryType() == QgsWkbTypes.PolygonGeometry:
-    #         print("Wybrana warstwa to Polygon.")
-    #
-    #         # Do something with the selected Polygon layer here
-    #
-    #     else:
-    #         print("Wybrana warstwa nie jest typu Polygon.")
     #
 
     def handle_pb5_click(self):

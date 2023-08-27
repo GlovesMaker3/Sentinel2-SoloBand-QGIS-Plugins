@@ -52,11 +52,6 @@ import ctypes
 from osgeo import ogr
 from osgeo import ogr, osr
 
-import osr
-from osgeo import ogr
-from qgis.core import QgsVectorLayer, QgsProject
-
-import json
 
 
 # This loads your .ui file so that PyQt can populate your plugin with the elements from Qt Designer
@@ -170,30 +165,15 @@ class SentinelOpenDialog(QtWidgets.QDialog, FORM_CLASS):
     #         selected_layer_name = self.cblista.currentText()
     #         print("Wybrany plik", self.cblista.currentText())
 
-    # def choose_directory_1(self):
-    #     dialog = QFileDialog(self)
-    #     dialog.setFileMode(QFileDialog.ExistingFile)
-    #     dialog.setNameFilter("Shapefiles (*.shp)")
-    #
-    #     selected_file, _ = dialog.getOpenFileName(self)
-    #
-    #     if selected_file:
-    #         self.process_shp_to_geojson(selected_file)
-
     def choose_directory_1(self):
         dialog = QFileDialog(self)
         dialog.setFileMode(QFileDialog.ExistingFile)
-        dialog.setNameFilter("Shapefiles (*.shp);;GeoJSON files (*.geojson)")
+        dialog.setNameFilter("Shapefiles (*.shp)")
 
         selected_file, _ = dialog.getOpenFileName(self)
 
         if selected_file:
-            if selected_file.lower().endswith('.shp'):
-                self.process_shp_to_geojson(selected_file)
-            else:
-                self.process_geojson(selected_file)
-
-
+            self.process_shp_to_geojson(selected_file)
 
     # def process_shp_to_geojson(self, shp_path):
     #     output_geojson_path = shp_path.replace('.shp', '.geojson')
@@ -218,42 +198,6 @@ class SentinelOpenDialog(QtWidgets.QDialog, FORM_CLASS):
     #     else:
     #         print("Nie udało się otworzyć pliku SHP.")
 
-#POPRAWNY ########################################################################
-    # def process_shp_to_geojson(self, shp_path):
-    #     output_geojson_path = shp_path.replace('.shp', '.geojson')
-    #
-    #     shp_driver = ogr.GetDriverByName('ESRI Shapefile')
-    #     shp_dataset = shp_driver.Open(shp_path)
-    #
-    #     if shp_dataset:
-    #         shp_layer = shp_dataset.GetLayer()
-    #         shp_spatial_ref = shp_layer.GetSpatialRef()
-    #
-    #         geojson_driver = ogr.GetDriverByName('GeoJSON')
-    #         geojson_dataset = geojson_driver.CreateDataSource(output_geojson_path)
-    #         geojson_layer = geojson_dataset.CreateLayer('', srs=shp_spatial_ref, geom_type=ogr.wkbPolygon)
-    #
-    #         # Przykład przekształcania współrzędnych
-    #         coord_transform = osr.CoordinateTransformation(shp_spatial_ref, shp_spatial_ref)
-    #
-    #         for feature in shp_layer:
-    #             geom = feature.GetGeometryRef()
-    #             geom.Transform(coord_transform)
-    #
-    #             new_feature = ogr.Feature(geojson_layer.GetLayerDefn())
-    #             new_feature.SetGeometry(geom.Clone())
-    #             geojson_layer.CreateFeature(new_feature)
-    #             new_feature = None
-    #
-    #         geojson_dataset = None
-    #         shp_dataset = None
-    #
-    #         print("Plik SHP przekonwertowany na GeoJSON:", output_geojson_path)
-    #     else:
-    #         print("Nie udało się otworzyć pliku SHP.")
-    # POPRAWNY ########################################################################
-
-#konwersja SHP NA GEOJSON
     def process_shp_to_geojson(self, shp_path):
         output_geojson_path = shp_path.replace('.shp', '.geojson')
 
@@ -284,57 +228,8 @@ class SentinelOpenDialog(QtWidgets.QDialog, FORM_CLASS):
             shp_dataset = None
 
             print("Plik SHP przekonwertowany na GeoJSON:", output_geojson_path)
-
-
-            # Wczytaj nową warstwę GeoJSON do QGIS
-            new_layer = QgsVectorLayer(output_geojson_path, "New_GeoJSON", "ogr")
-
-
-            if new_layer.isValid():
-                QgsProject.instance().addMapLayer(new_layer)
-                self.cblista.addItem(new_layer.name())  # Dodaj nową warstwę do comboboxa
-                print("Nowa warstwa dodana do QGIS:", new_layer.name())
-            else:
-                print("Nie udało się wczytać nowej warstwy do QGIS.")
-
         else:
             print("Nie udało się otworzyć pliku SHP.")
-
-
-    # def process_geojson(self, geojson_path):
-    #     # Wczytaj nową warstwę GeoJSON do QGIS
-    #     new_layer = QgsVectorLayer(geojson_path, "Nowa warstwa GeoJSON", "ogr")
-    #
-    #     if new_layer.isValid():
-    #         QgsProject.instance().addMapLayer(new_layer)
-    #         self.cblista.addItem(new_layer.name())  # Dodaj nową warstwę do comboboxa
-    #         print("Nowa warstwa GeoJSON dodana do QGIS:", new_layer.name())
-    #     else:
-    #         print("Nie udało się wczytać nowej warstwy GeoJSON do QGIS.")
-    #
-    # def wybieraniewarstwzmapy(self, index):
-    #     selected_layer_name = self.cblista.itemText(index)
-    #     print("Wybrana warstwa z mapy:", selected_layer_name)
-
-    def process_geojson(self, geojson_path):
-        # Wczytaj nową warstwę GeoJSON do QGIS
-        new_layer = QgsVectorLayer(geojson_path, self.get_file_name(geojson_path), "ogr")
-
-        if new_layer.isValid():
-            QgsProject.instance().addMapLayer(new_layer)
-            self.cblista.addItem(new_layer.name())  # Dodaj nową warstwę do comboboxa
-            print("Nowa warstwa GeoJSON dodana do QGIS:", new_layer.name())
-        else:
-            print("Nie udało się wczytać nowej warstwy GeoJSON do QGIS.")
-
-    def get_file_name(self, file_path):
-        return os.path.splitext(os.path.basename(file_path))[0]
-
-
-    # def wybieraniewarstwzmapy(self, index):
-    #     selected_layer_name = self.cblista.itemText(index)
-    #     print("Wybrana warstwa z mapy:", selected_layer_name)
-
 
     # def choose_directory_1(self):
     #     dialog = QFileDialog(self)
@@ -411,20 +306,6 @@ class SentinelOpenDialog(QtWidgets.QDialog, FORM_CLASS):
         print('wybieraniewarstwzmapy(self, index):')
         selected_layer_name = self.cblista.currentText()  # Get the name of the selected layer
         print(f'Wybrana warstwa: {selected_layer_name}')
-
-    # def wybieraniewarstwzmapy(self, index):
-    #     print('wybieraniewarstwzmapy(self, index):')
-    #     selected_layer_name = self.cblista.currentText()  # Get the name of the selected layer
-    #     print(f'Wybrana warstwa: {selected_layer_name}')
-    #
-    #     selected_layer = QgsProject.instance().mapLayersByName(selected_layer_name)[0]
-    #     if selected_layer.geometryType() == QgsWkbTypes.PolygonGeometry:
-    #         print("Wybrana warstwa to Polygon.")
-    #
-    #         # Do something with the selected Polygon layer here
-    #
-    #     else:
-    #         print("Wybrana warstwa nie jest typu Polygon.")
     #
 
     def handle_pb5_click(self):
