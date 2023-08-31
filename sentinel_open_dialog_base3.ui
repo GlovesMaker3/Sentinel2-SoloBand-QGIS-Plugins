@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>382</width>
+    <width>393</width>
     <height>693</height>
    </rect>
   </property>
@@ -415,8 +415,8 @@
     <widget class="QLabel" name="label_15">
      <property name="geometry">
       <rect>
-       <x>100</x>
-       <y>60</y>
+       <x>10</x>
+       <y>50</y>
        <width>181</width>
        <height>20</height>
       </rect>
@@ -798,19 +798,6 @@
       <string>...</string>
      </property>
     </widget>
-    <widget class="QLabel" name="label_20">
-     <property name="geometry">
-      <rect>
-       <x>310</x>
-       <y>60</y>
-       <width>51</width>
-       <height>20</height>
-      </rect>
-     </property>
-     <property name="text">
-      <string>add *shp</string>
-     </property>
-    </widget>
    </widget>
   </widget>
   <widget class="QLabel" name="label_7">
@@ -823,7 +810,7 @@
     </rect>
    </property>
    <property name="text">
-    <string>Sentinel 2 - version 2.0.4</string>
+    <string>Sentinel 2 - version 2.0.3</string>
    </property>
   </widget>
  </widget>

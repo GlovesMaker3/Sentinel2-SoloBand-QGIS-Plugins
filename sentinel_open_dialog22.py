@@ -56,8 +56,6 @@ import osr
 from osgeo import ogr
 from qgis.core import QgsVectorLayer, QgsProject
 
-from osgeo import ogr, osr
-
 # This loads your .ui file so that PyQt can populate your plugin with the elements from Qt Designer
 FORM_CLASS, _ = uic.loadUiType(os.path.join(
     os.path.dirname(__file__), 'sentinel_open_dialog_base.ui'))
@@ -253,53 +251,6 @@ class SentinelOpenDialog(QtWidgets.QDialog, FORM_CLASS):
     # POPRAWNY ########################################################################
 
 #konwersja SHP NA GEOJSON
-    # def process_shp_to_geojson(self, shp_path):
-    #     output_geojson_path = shp_path.replace('.shp', '.geojson')
-    #
-    #     shp_driver = ogr.GetDriverByName('ESRI Shapefile')
-    #     shp_dataset = shp_driver.Open(shp_path)
-    #
-    #     if shp_dataset:
-    #         shp_layer = shp_dataset.GetLayer()
-    #         shp_spatial_ref = shp_layer.GetSpatialRef()
-    #
-    #         geojson_driver = ogr.GetDriverByName('GeoJSON')
-    #         geojson_dataset = geojson_driver.CreateDataSource(output_geojson_path)
-    #         geojson_layer = geojson_dataset.CreateLayer('', srs=shp_spatial_ref, geom_type=ogr.wkbPolygon)
-    #
-    #         # Przykład przekształcania współrzędnych
-    #         coord_transform = osr.CoordinateTransformation(shp_spatial_ref, shp_spatial_ref)
-    #
-    #         for feature in shp_layer:
-    #             geom = feature.GetGeometryRef()
-    #             geom.Transform(coord_transform)
-    #
-    #             new_feature = ogr.Feature(geojson_layer.GetLayerDefn())
-    #             new_feature.SetGeometry(geom.Clone())
-    #             geojson_layer.CreateFeature(new_feature)
-    #             new_feature = None
-    #
-    #         geojson_dataset = None
-    #         shp_dataset = None
-    #
-    #         print("Plik SHP przekonwertowany na GeoJSON:", output_geojson_path)
-    #
-    #
-    #         # Wczytaj nową warstwę GeoJSON do QGIS
-    #         new_layer = QgsVectorLayer(output_geojson_path, "New_GeoJSON", "ogr")
-    #
-    #
-    #         if new_layer.isValid():
-    #             QgsProject.instance().addMapLayer(new_layer)
-    #             self.cblista.addItem(new_layer.name())  # Dodaj nową warstwę do comboboxa
-    #             print("Nowa warstwa dodana do QGIS:", new_layer.name())
-    #         else:
-    #             print("Nie udało się wczytać nowej warstwy do QGIS.")
-    #
-    #     else:
-    #         print("Nie udało się otworzyć pliku SHP.")
-
-
     def process_shp_to_geojson(self, shp_path):
         output_geojson_path = shp_path.replace('.shp', '.geojson')
 
@@ -310,22 +261,16 @@ class SentinelOpenDialog(QtWidgets.QDialog, FORM_CLASS):
             shp_layer = shp_dataset.GetLayer()
             shp_spatial_ref = shp_layer.GetSpatialRef()
 
-            # Sprawdź, czy warstwa nie jest już w WGS84
-            if shp_spatial_ref and shp_spatial_ref.GetAttrValue("AUTHORITY", 1) != "4326":
-                wgs84_spatial_ref = osr.SpatialReference()
-                wgs84_spatial_ref.ImportFromEPSG(4326)  # Kod EPSG dla WGS84
-                coord_transform = osr.CoordinateTransformation(shp_spatial_ref, wgs84_spatial_ref)
-            else:
-                coord_transform = None
-
             geojson_driver = ogr.GetDriverByName('GeoJSON')
             geojson_dataset = geojson_driver.CreateDataSource(output_geojson_path)
-            geojson_layer = geojson_dataset.CreateLayer('', srs=wgs84_spatial_ref, geom_type=ogr.wkbPolygon)
+            geojson_layer = geojson_dataset.CreateLayer('', srs=shp_spatial_ref, geom_type=ogr.wkbPolygon)
+
+            # Przykład przekształcania współrzędnych
+            coord_transform = osr.CoordinateTransformation(shp_spatial_ref, shp_spatial_ref)
 
             for feature in shp_layer:
                 geom = feature.GetGeometryRef()
-                if coord_transform:
-                    geom.Transform(coord_transform)
+                geom.Transform(coord_transform)
 
                 new_feature = ogr.Feature(geojson_layer.GetLayerDefn())
                 new_feature.SetGeometry(geom.Clone())
@@ -337,8 +282,10 @@ class SentinelOpenDialog(QtWidgets.QDialog, FORM_CLASS):
 
             print("Plik SHP przekonwertowany na GeoJSON:", output_geojson_path)
 
+
             # Wczytaj nową warstwę GeoJSON do QGIS
             new_layer = QgsVectorLayer(output_geojson_path, "New_GeoJSON", "ogr")
+
 
             if new_layer.isValid():
                 QgsProject.instance().addMapLayer(new_layer)
@@ -349,6 +296,7 @@ class SentinelOpenDialog(QtWidgets.QDialog, FORM_CLASS):
 
         else:
             print("Nie udało się otworzyć pliku SHP.")
+
 
 
 

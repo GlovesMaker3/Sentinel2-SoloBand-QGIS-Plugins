@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>382</width>
+    <width>393</width>
     <height>693</height>
    </rect>
   </property>
@@ -23,7 +23,7 @@
     </rect>
    </property>
    <property name="currentIndex">
-    <number>1</number>
+    <number>0</number>
    </property>
    <widget class="QWidget" name="tab">
     <attribute name="title">
@@ -411,12 +411,15 @@
      <property name="text">
       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;You can create footprint GeoJSON files on &lt;a href=&quot;https://geojson.io/&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;https://geojson.io/&lt;/span&gt;&lt;/a&gt; and export&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
      </property>
+     <property name="openExternalLinks">
+      <bool>true</bool>
+     </property>
     </widget>
     <widget class="QLabel" name="label_15">
      <property name="geometry">
       <rect>
-       <x>100</x>
-       <y>60</y>
+       <x>10</x>
+       <y>50</y>
        <width>181</width>
        <height>20</height>
       </rect>
@@ -798,19 +801,6 @@
       <string>...</string>
      </property>
     </widget>
-    <widget class="QLabel" name="label_20">
-     <property name="geometry">
-      <rect>
-       <x>310</x>
-       <y>60</y>
-       <width>51</width>
-       <height>20</height>
-      </rect>
-     </property>
-     <property name="text">
-      <string>add *shp</string>
-     </property>
-    </widget>
    </widget>
   </widget>
   <widget class="QLabel" name="label_7">
@@ -823,7 +813,7 @@
     </rect>
    </property>
    <property name="text">
-    <string>Sentinel 2 - version 2.0.4</string>
+    <string>Sentinel 2 - version 2.0.3</string>
    </property>
   </widget>
  </widget>
