@@ -23,7 +23,7 @@
     </rect>
    </property>
    <property name="currentIndex">
-    <number>0</number>
+    <number>1</number>
    </property>
    <widget class="QWidget" name="tab">
     <attribute name="title">
@@ -282,9 +282,6 @@
        <width>341</width>
        <height>23</height>
       </rect>
-     </property>
-     <property name="cursor">
-      <cursorShape>ArrowCursor</cursorShape>
      </property>
      <property name="text">
       <string>Download</string>
@@ -826,7 +823,7 @@
     </rect>
    </property>
    <property name="text">
-    <string>Sentinel 2 - version 2.0.5</string>
+    <string>Sentinel 2 - version 2.0.4</string>
    </property>
   </widget>
  </widget>
