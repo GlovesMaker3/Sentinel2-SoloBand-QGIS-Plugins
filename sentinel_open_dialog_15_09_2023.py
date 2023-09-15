@@ -23,21 +23,41 @@
 """
 
 import os
-from qgis.PyQt import uic, QtWidgets
+
+from qgis.PyQt import uic
+from qgis.PyQt import QtWidgets
+from sentinelsat import SentinelAPI
 from sentinelsat import SentinelAPI, read_geojson, geojson_to_wkt, make_path_filter
 from datetime import date, timedelta
+#, read_geojson, geojson_to_wkt, make_path_filter
+#, read_geojson, geojson_to_wkt, make_path_filter
+# from datetime import date, timedelta
+# from collections import OrderedDict
+# import boto3
 from qgis.core import QgsProject, QgsGeometry, QgsWkbTypes
 from shapely.geometry import mapping
 from shapely.ops import unary_union
 from qgis.utils import iface
 from qgis.PyQt.QtCore import QVariant
+from qgis.PyQt.QtCore import QVariant
+from qgis.core import QgsFeature, QgsGeometry, QgsVectorLayer, QgsWkbTypes
 from PyQt5.QtCore import QDate
 from PyQt5.QtWidgets import QMainWindow, QFileDialog, QToolButton, QApplication
+
+import os
 import subprocess
 import sys
 import ctypes
+
+from osgeo import ogr
 from osgeo import ogr, osr
 
+import osr
+from osgeo import ogr
+from qgis.core import QgsVectorLayer, QgsProject
+
+from osgeo import ogr, osr
+from PyQt5.QtWidgets import QMainWindow, QMessageBox
 
 
 # This loads your .ui file so that PyQt can populate your plugin with the elements from Qt Designer
@@ -435,7 +455,7 @@ class SentinelOpenDialog(QtWidgets.QDialog, FORM_CLASS):
             # message_box.exec_()
         self.api = SentinelAPI('GlovesMaker123', 'd63613255D', 'https://scihub.copernicus.eu/dhus')
         #self.api = SentinelAPI('fishfounder', 'LifeBelowWather1123', 'https://scihub.copernicus.eu/dhus')
-        print('ok_15_09_2023')
+        print('ok_25_08_2023')
 
 
             ################################# Search and download ########################################
@@ -469,7 +489,6 @@ class SentinelOpenDialog(QtWidgets.QDialog, FORM_CLASS):
             print('_2_: ' + str(n))
             path_filter = make_path_filter("*{}".format(x))
             print(path_filter)
-
             self.api.download_all(self.products, directory_path=output_dir, nodefilter=path_filter)
 
             print('\n')
@@ -478,59 +497,8 @@ class SentinelOpenDialog(QtWidgets.QDialog, FORM_CLASS):
 
 
 
-    # def download_band(self, s3, output_dir):
-    #     print('download_band(self, s3, output_dir):')
-    #     n = 0
-    #     for x in s3:
-    #         n += 1
-    #         print('_2_: ' + str(n))
-    #         path_filter = make_path_filter("*{}".format(x))
-    #         print(path_filter)
-    #
-    #         # Dodaj logikę sprawdzającą online/offline i wyświetl odpowiedni komunikat
-    #         product_info = self.api.get_product_odata(self.products)
-    #         is_online = product_info.get('Online', False)
-    #
-    #         if is_online:
-    #             print(f'Product {self.products} is online. Starting download.')
-    #         else:
-    #             print(f'Product {self.products} is not online. Skipping download.')
-    #
-    #         # Bez zmian w pozostałej części funkcji
-    #         self.api.download_all(self.products, directory_path=output_dir, nodefilter=path_filter)
-    #
-    #         print('\n')
-    #         print("Download for - *{}".format(x))
-    #         self.Status_pobierania.setText("Download for - *{}".format(x))
 
-    # def download_band(self, s3, output_dir):
-    #     print('download_band(self, s3, output_dir):')
-    #     n = 0
-    #     for x in s3:
-    #         n += 1
-    #         print('_2_: ' + str(n))
-    #         path_filter = make_path_filter("*{}".format(x))
-    #         print(path_filter)
-    #
-    #         try:
-    #             # Pobierz informacje o produkcie
-    #             product_info = self.api.get_product_odata(self.products)
-    #             is_online = product_info.get('Online', False)
-    #
-    #             if is_online:
-    #                 print(f'Product {self.products} is online. Starting download.')
-    #                 self.api.download(self.products, directory_path=output_dir)
-    #             else:
-    #                 print(f'Product {self.products} is not online.')
-    #                 QtWidgets.QMessageBox.warning(self, 'Attention', 'Log in before downloading.')
-    #
-    #             print('\n')
-    #             print("Download for - *{}".format(x))
-    #             self.Status_pobierania.setText("Download for - *{}".format(x))
-    #
-    #         except Exception as e:
-    #             print("Błąd podczas pobierania produktów z Sentinel Hub API:", e)
-    #             print("Zdjęcie jest offline lub wystąpił inny problem.")
+
 
     def download(self):
         print('download(self)')
@@ -603,107 +571,90 @@ class SentinelOpenDialog(QtWidgets.QDialog, FORM_CLASS):
 
         # Pobranie listy identyfikatorów produktów z kluczy słownika products_0
         identyfikatory_produktow = list(products_0.keys())
-
-
         print(identyfikatory_produktow)
         print(len(identyfikatory_produktow))
         # Changing the message:
         QtWidgets.QMessageBox.warning(self, 'Attention', f'WARNING: {len(identyfikatory_produktow)} satellite scene(s) have been located for the selected spectral band.')
         # Iteracja przez wszystkie produkty w products_0
-        z = 0
         for identyfikator_produktu in identyfikatory_produktow:
             informacje_o_produkcie = products_0[identyfikator_produktu]
 
+            # Wydobycie potrzebnych informacji o produkcie
+            print('\n')
+            print('\n')
+            print('\n')
+            print('Teraz będę pobierać: ' + informacje_o_produkcie['title'])
+            QtWidgets.QMessageBox.warning(self, 'Attention', "Now I will download. Please click 'OK' and wait for the program to start downloading the image. Even if there's no immediate response, please wait patiently.")
 
-            # to jest po to żeby sprawdzić czy foto jest offline czy online
-            product_info = self.api.get_product_odata(identyfikator_produktu)
-
-            print(product_info)
-            is_online = product_info['Online']
-            print("Connection status is: " + str(is_online) + ", please open the Python console in QGIS to learn more.")
 
             #z += 1
             #print('Przejście - for nr 1: ' + str(z))
-            if is_online:
-                # Wydobycie potrzebnych informacji o produkcie
 
-                # Wydobycie potrzebnych informacji o produkcie
-                print('\n')
-                print('\n')
-                print('\n')
-                print('Teraz będę pobierać: ' + informacje_o_produkcie['title'])
-                QtWidgets.QMessageBox.warning(self, 'Attention', "Now I will download. Please click 'OK' and wait for the program to start downloading the image. Even if there's no immediate response, please wait patiently.")
-
+            # Pobranie produktów na podstawie informacji o produkcie
+            self.products = self.api.query(footprint_wkt,
+                                           date=(start_date, end_date),
+                                           platformname='Sentinel-2',
+                                           producttype='S2MSI2A',
+                                           cloudcoverpercentage=(0, self.cloud.value()),
+                                           filename='{}'.format(informacje_o_produkcie['filename']))
 
 
 
-                # Pobranie produktów na podstawie informacji o produkcie
-                self.products = self.api.query(footprint_wkt,
-                                               date=(start_date, end_date),
-                                               platformname='Sentinel-2',
-                                               producttype='S2MSI2A',
-                                               cloudcoverpercentage=(0, self.cloud.value()),
-                                               filename='{}'.format(informacje_o_produkcie['filename']))
+
+
+###################### 10m ##############################
+
+
+
+            if self.ALL_10m.isChecked():
+
+                s3 = ['AOT_10m.jp2', 'B02_10m.jp2', 'B03_10m.jp2', 'B04_10m.jp2', 'B08_10m.jp2', 'TCI_10m.jp2', 'WVP_10m.jp2']
+
+                print('ALL_10m')
+            elif self.ALL_20m.isChecked():
+                s3 = ['AOT_20m.jp2', 'B01_20m.jp2', 'B02_20m.jp2', 'B03_20m.jp2', 'B04_20m.jp2', 'B05_20m.jp2', 'B06_20m.jp2', 'B07_20m.jp2', 'B8A_20m.jp2', 'B11_20m.jp2', 'B12_20m.jp2', 'SCL_20m.jp2', 'TCI_20m.jp2', 'WVP_20m.jp2']
+                print('ALL_20m')
+
 
             else:
-                QtWidgets.QMessageBox.warning(self, 'Attention', 'Scena jest offline lub nie znaleziono scen do pobrania')
-            # print(identyfikatory_produktow[k])
+                selected_bands = [band for band in self.band_filenames if getattr(self, band).isChecked()]
+                print('Band: '+str(selected_bands))
 
 
-    ###################### 10m ##############################
+                #komunikat o tym, że zaczyna się pobieranie
+                # if not self.down_active:
+                #     # komunikat o pobierainu danych
+                #     QtWidgets.QMessageBox.warning(self, 'Download', 'Please waiting....')
+                #     #return
 
+                if not selected_bands:
+                    print('Nie wybrano żadnych kanałów do pobrania.')
+                    QtWidgets.QMessageBox.warning(self, 'Attention', 'The band for download have not been selected.')
 
-
-                if self.ALL_10m.isChecked():
-
-                    s3 = ['AOT_10m.jp2', 'B02_10m.jp2', 'B03_10m.jp2', 'B04_10m.jp2', 'B08_10m.jp2', 'TCI_10m.jp2', 'WVP_10m.jp2']
-
-                    print('ALL_10m')
-                elif self.ALL_20m.isChecked():
-                    s3 = ['AOT_20m.jp2', 'B01_20m.jp2', 'B02_20m.jp2', 'B03_20m.jp2', 'B04_20m.jp2', 'B05_20m.jp2', 'B06_20m.jp2', 'B07_20m.jp2', 'B8A_20m.jp2', 'B11_20m.jp2', 'B12_20m.jp2', 'SCL_20m.jp2', 'TCI_20m.jp2', 'WVP_20m.jp2']
-                    print('ALL_20m')
-
-
-                else:
-                    selected_bands = [band for band in self.band_filenames if getattr(self, band).isChecked()]
-                    print('Band: '+str(selected_bands))
-
-
-                    #komunikat o tym, że zaczyna się pobieranie
-                    # if not self.down_active:
-                    #     # komunikat o pobierainu danych
-                    #     QtWidgets.QMessageBox.warning(self, 'Download', 'Please waiting....')
-                    #     #return
-
-                    if not selected_bands:
-                        print('Nie wybrano żadnych kanałów do pobrania.')
-                        QtWidgets.QMessageBox.warning(self, 'Attention', 'The band for download have not been selected.')
-
-                        return
-
-                    s3 = []
-                    for band in selected_bands:
-                        s3.extend(self.band_filenames.get(band, []))
-                        #print(s3[:])
-
-
-                if not s3:
-                    print('Brak plików do pobrania.')
                     return
 
-                print(s3[:])
+                s3 = []
+                for band in selected_bands:
+                    s3.extend(self.band_filenames.get(band, []))
+                    #print(s3[:])
 
 
-                output_dir = self.q7.text()
+            if not s3:
+                print('Brak plików do pobrania.')
+                return
 
-                # self.open_file(output_dir)
-
-                self.download_band(s3, output_dir)
+            print(s3[:])
 
 
-            # Resetowanie listy s3 dla kolejnego produktu
-            s3 = []
+            output_dir = self.q7.text()
 
+            # self.open_file(output_dir)
+
+            self.download_band(s3, output_dir)
+
+
+        # Resetowanie listy s3 dla kolejnego produktu
+        s3 = []
 
 
 
