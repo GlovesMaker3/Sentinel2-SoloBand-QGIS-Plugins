@@ -39,6 +39,38 @@ import ctypes
 from osgeo import ogr, osr
 
 
+import subprocess
+import sys
+import os
+from qgis.PyQt import uic, QtWidgets
+from datetime import date, timedelta
+from qgis.core import QgsProject, QgsGeometry, QgsWkbTypes
+from qgis.utils import iface
+from qgis.PyQt.QtCore import QVariant
+from PyQt5.QtCore import QDate
+from qgis.core import QgsVectorLayer
+
+# Sprawdź, czy biblioteka jest dostępna
+try:
+    from sentinelsat import SentinelAPI, read_geojson, geojson_to_wkt, make_path_filter
+except ImportError:
+    # Jeśli biblioteka nie jest dostępna, można ją zainstalować
+    import subprocess
+    import sys
+
+    # Ustal ścieżkę do interpretera Pythona QGIS
+    python_path = sys.executable
+
+    # Zainstaluj bibliotekę sentinelsat za pomocą pip
+    try:
+        subprocess.check_call([python_path, "-m", "pip", "install", "sentinelsat"])
+    except subprocess.CalledProcessError as e:
+        iface.messageBar().pushMessage("Błąd", f"Nie udało się zainstalować biblioteki sentinelsat: {e}", level=Qgis.Critical)
+    else:
+        # Po zainstalowaniu biblioteki można ją zaimportować
+        from sentinelsat import SentinelAPI, read_geojson, geojson_to_wkt, make_path_filter
+print('launched libraries')
+
 
 # This loads your .ui file so that PyQt can populate your plugin with the elements from Qt Designer
 FORM_CLASS, _ = uic.loadUiType(os.path.join(
@@ -409,13 +441,13 @@ class SentinelOpenDialog(QtWidgets.QDialog, FORM_CLASS):
         self.login()
 
     def login(self):
-        print('login(self)')
+        #print('login(self)')
         value1 = self.q1.text()
         value2 = self.q2.text()
         value3 = self.q3.text()
 
-        if value1:
-        #if value1 and value2 and value3 and self.pb4_clicked:
+        #if value1:
+        if value1 and value2 and value3 and self.pb4_clicked:
             self.logged_in = True
             print(f'url: {value1}')
             print(f'Login: {value2}')
@@ -423,19 +455,21 @@ class SentinelOpenDialog(QtWidgets.QDialog, FORM_CLASS):
 
 
 
-            #api = SentinelAPI(value2, value3, value1)
+            self.api = SentinelAPI(value2, value3, value1)
             #api = SentinelAPI('GlovesMaker123', 'd63613255D', 'https://scihub.copernicus.eu/dhus')
-            self.q4.setText('Zostałeś zalogowany')
-            # Tworzenie komunikatu
-            # message_box = QtWidgets.QMessageBox()
-            # message_box.setWindowTitle('Zalogowano')
-            # message_box.setIcon(QtWidgets.QMessageBox.Information)
-            # message_box.setText('Zostałeś zalogowany.')
-            # message_box.setStandardButtons(QtWidgets.QMessageBox.Ok)
-            # message_box.exec_()
-        self.api = SentinelAPI('GlovesMaker123', 'd63613255D', 'https://scihub.copernicus.eu/dhus')
+            self.q4.setText("Connection successful. The plugin won't verify password compatibility if you've entered it incorrectly; it's best to restart the plugin. We don't collect login data. If you want to see login and image retrieval details, open a Python window in QGIS.")
+            #Tworzenie komunikatu
+            message_box = QtWidgets.QMessageBox()
+            message_box.setWindowTitle('Login')
+            message_box.setIcon(QtWidgets.QMessageBox.Information)
+
+            message_box.setText("Connection successful. The plugin won't verify password compatibility if you've entered it incorrectly; it's best to restart the plugin. We don't collect login data.")
+
+            message_box.setStandardButtons(QtWidgets.QMessageBox.Ok)
+            message_box.exec_()
+        #self.api = SentinelAPI('GlovesMaker123', 'd63613255D', 'https://scihub.copernicus.eu/dhus')
         #self.api = SentinelAPI('fishfounder', 'LifeBelowWather1123', 'https://scihub.copernicus.eu/dhus')
-        print('ok_15_09_2023')
+            print('ok_03_10_2023_login')
 
 
             ################################# Search and download ########################################
@@ -453,6 +487,7 @@ class SentinelOpenDialog(QtWidgets.QDialog, FORM_CLASS):
     #                                       f'WARNING: The program works only with *GeoJSON format. Selected layer: {selected_layer_name} (not a GeoJSON file - you can load a *Shp file alongside)')
     #     else:
     #         print(f'Selected layer: {selected_layer_name}')
+
 
 
     def handle_pb5_click(self):
@@ -532,6 +567,33 @@ class SentinelOpenDialog(QtWidgets.QDialog, FORM_CLASS):
     #             print("Błąd podczas pobierania produktów z Sentinel Hub API:", e)
     #             print("Zdjęcie jest offline lub wystąpił inny problem.")
 
+    # OTWIERA SIĘ TYLKO ZA 1 RAZEM
+    # def open_file(self, output_dir):
+    #
+    #     if os.path.exists(output_dir):
+    #         if not self.folder_opened:  # Sprawdzamy, czy folder nie został już otwarty wcześniej
+    #             if sys.platform == 'win32':
+    #                 subprocess.Popen(['explorer', output_dir], shell=True)
+    #             elif sys.platform == 'darwin':
+    #                 subprocess.Popen(['open', output_dir])
+    #             else:
+    #                 subprocess.Popen(['xdg-open', output_dir])
+    #             self.folder_opened = True  # Ustawiamy stan otwarcia folderu na True
+    #         else:
+    #             print('Folder już został otwarty.')
+    #     else:
+    #         print(f'Folder nie istnieje: {output_dir}')
+
+    def open_file(self, output_dir):
+        if os.path.exists(output_dir):
+            if sys.platform == 'win32':
+                subprocess.Popen(['explorer', output_dir], shell=True)
+            elif sys.platform == 'darwin':
+                subprocess.Popen(['open', output_dir])
+            else:
+                subprocess.Popen(['xdg-open', output_dir])
+        else:
+            print(f'Folder nie istnieje: {output_dir}')
     def download(self):
         print('download(self)')
         if not self.logged_in:
@@ -646,7 +708,7 @@ class SentinelOpenDialog(QtWidgets.QDialog, FORM_CLASS):
                                                filename='{}'.format(informacje_o_produkcie['filename']))
 
             else:
-                QtWidgets.QMessageBox.warning(self, 'Attention', 'Scena jest offline lub nie znaleziono scen do pobrania')
+                QtWidgets.QMessageBox.warning(self, 'Attention', 'The scene is offline or no scenes were found to download')
             # print(identyfikatory_produktow[k])
 
 
@@ -695,8 +757,8 @@ class SentinelOpenDialog(QtWidgets.QDialog, FORM_CLASS):
 
 
                 output_dir = self.q7.text()
-
-                # self.open_file(output_dir)
+                if self.OPEN.isChecked():
+                    self.open_file(output_dir)
 
                 self.download_band(s3, output_dir)
 
