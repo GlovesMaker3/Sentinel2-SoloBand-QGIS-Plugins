@@ -3,17 +3,17 @@
 # This file should be included when you package your plugin.# Mandatory items:
 
 [general]
-name=SentinelOpenAccessHub
+name=Sentinel2 SoloBand
 qgisMinimumVersion=3.0
 description=Sentinel2 SoloBand is an advanced plugin designed to facilitate the convenient and precise retrieval of individual channels from the Sentinel-2 mission.
-version=0.1
+version=2.0.8
 author=FishFounder
-email=buchar123@gmail.com
+email=fishfounderstartup@gmail.com
 
-about=Sentinel2 SoloBand is an advanced plugin designed to facilitate the convenient and precise retrieval of individual channels from the Sentinel-2 mission.
+about=The plugin is continuously evolving and offers SHP to GeoJSON file conversion. It allows for the download of individual channels at 10m and 20m resolutions. All scenes for a given time period are downloaded unless they are offline: Sentinel2 SoloBand is an advanced plugin designed to facilitate the convenient and precise retrieval of individual channels from the Sentinel-2 mission.
 
-tracker=http://bugs
-repository=http://repo
+tracker=https://github.com/GlovesMaker3/sentinel2/issues
+repository=https://github.com/GlovesMaker3/sentinel2
 # End of mandatory metadata
 
 # Recommended items:
@@ -23,13 +23,13 @@ hasProcessingProvider=no
 # changelog=
 
 # Tags are comma separated with spaces allowed
-tags=python
+tags=OpenAccessHub, copernicus, images, download, sentinel2, sentinel, soloband, band
 
-homepage=http://homepage
+homepage=https://sentinel2-soloband-29fa5248a981.herokuapp.com/
 category=Plugins
-icon=icon.png
+icon=crescent-2023236_640.png
 # experimental flag
-experimental=False
+experimental=True
 
 # deprecated flag (applies to the whole plugin, not just a single version)
 deprecated=False
@@ -40,7 +40,7 @@ deprecated=False
 # plugin_dependencies=
 
 Category of the plugin: Raster, Vector, Database or Web
-# category=
+# category=Web
 
 # If the plugin can run on QGIS Server.
 server=False

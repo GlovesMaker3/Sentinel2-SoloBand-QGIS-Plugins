@@ -107,7 +107,7 @@ class SentinelOpenDialog(QtWidgets.QDialog, FORM_CLASS):
         self.pb5_clicked = False  # Flaga dla śledzenia kliknięcia pb5
 
         #self.q7.textChanged.connect(self.download)
-        self.q7.setText(r"C:\Users\FBI\Downloads")
+        self.q7.setText(r"C:\Users\FBI\Downloads\s2")
 
 
         # Inicjalizacja interfejsu użytkownika, dodanie przycisku, itp.
@@ -585,24 +585,15 @@ class SentinelOpenDialog(QtWidgets.QDialog, FORM_CLASS):
     #         print(f'Folder nie istnieje: {output_dir}')
 
     def open_file(self, output_dir):
-        try:
-            if os.path.exists(output_dir):
-                # Zamień ukośniki wsteczne na zwykłe ukośniki
-                output_dir = output_dir.replace('/', '\\')
-                print(f"Opening directory: {output_dir}")
-                if sys.platform == 'win32':
-                    subprocess.Popen(['explorer', output_dir], shell=True)
-                elif sys.platform == 'darwin':
-                    subprocess.Popen(['open', output_dir])
-                else:
-                    subprocess.Popen(['xdg-open', output_dir])
-                print("Directory opened successfully.")
+        if os.path.exists(output_dir):
+            if sys.platform == 'win32':
+                subprocess.Popen(['explorer', output_dir], shell=True)
+            elif sys.platform == 'darwin':
+                subprocess.Popen(['open', output_dir])
             else:
-                print(f'Folder does not exist: {output_dir}')
-        except Exception as e:
-            print(f"An error occurred while opening the directory: {str(e)}")
-
-
+                subprocess.Popen(['xdg-open', output_dir])
+        else:
+            print(f'Folder nie istnieje: {output_dir}')
     def download(self):
         print('download(self)')
         if not self.logged_in:
@@ -766,13 +757,10 @@ class SentinelOpenDialog(QtWidgets.QDialog, FORM_CLASS):
 
 
                 output_dir = self.q7.text()
-                self.download_band(s3, output_dir)
-
                 if self.OPEN.isChecked():
                     self.open_file(output_dir)
-                    print(output_dir)
 
-
+                self.download_band(s3, output_dir)
 
 
             # Resetowanie listy s3 dla kolejnego produktu
