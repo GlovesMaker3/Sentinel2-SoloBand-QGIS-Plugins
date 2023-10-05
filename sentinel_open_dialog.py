@@ -107,7 +107,7 @@ class SentinelOpenDialog(QtWidgets.QDialog, FORM_CLASS):
         self.pb5_clicked = False  # Flaga dla śledzenia kliknięcia pb5
 
         #self.q7.textChanged.connect(self.download)
-        self.q7.setText(r"C:\Users\FBI\Downloads")
+        self.q7.setText(r"C:\Users")
 
 
         # Inicjalizacja interfejsu użytkownika, dodanie przycisku, itp.
