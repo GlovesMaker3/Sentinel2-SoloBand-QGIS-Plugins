@@ -6,7 +6,7 @@
 name=Sentinel2 SoloBand
 qgisMinimumVersion=3.0
 description=Sentinel2 SoloBand is an advanced plugin designed to facilitate the convenient and precise retrieval of individual channels from the Sentinel-2 mission.
-version=2.0.9
+version=2.1.1
 author=FishFounder
 email=fishfounderstartup@gmail.com
 
@@ -23,7 +23,7 @@ hasProcessingProvider=no
 # changelog=
 
 # Tags are comma separated with spaces allowed
-tags=OpenAccessHub, copernicus, images, download, sentinel2, sentinel, soloband, band
+tags=OpenAccessHub, copernicus, download, sentinel2, sentinel, soloband, band, sentinel ,images 
 
 homepage=https://sentinel2-soloband-29fa5248a981.herokuapp.com/
 category=Plugins

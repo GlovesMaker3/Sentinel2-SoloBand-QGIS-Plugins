@@ -3,10 +3,10 @@
 #
 # Sentinel2 SoloBand is an advanced plugin designed to facilitate the convenient and precise retrieval of individual channels from the Sentinel-2 mission.
 #							 -------------------
-#		begin				: 2023-08-19
+#		begin				: 2023-10-04
 #		git sha				: $Format:%H$
 #		copyright			: (C) 2023 by FishFounder
-#		email				: buchar123@gmail.com
+#		email				: fishfounderstartup@gmail.com
 # ***************************************************************************/
 #
 #/***************************************************************************
@@ -48,7 +48,7 @@ PY_FILES = \
 
 UI_FILES = sentinel_open_dialog_base.ui
 
-EXTRAS = metadata.txt icon.png
+EXTRAS = metadata.txt crescent-2023236_640.png
 
 EXTRA_DIRS =
 
