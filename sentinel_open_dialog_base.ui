@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>625</width>
+    <width>631</width>
     <height>744</height>
    </rect>
   </property>
@@ -381,26 +381,6 @@ p, li { white-space: pre-wrap; }
       <string>end_date</string>
      </property>
     </widget>
-    <widget class="QLabel" name="label_12">
-     <property name="geometry">
-      <rect>
-       <x>20</x>
-       <y>580</y>
-       <width>61</width>
-       <height>21</height>
-      </rect>
-     </property>
-     <property name="font">
-      <font>
-       <pointsize>9</pointsize>
-       <weight>75</weight>
-       <bold>true</bold>
-      </font>
-     </property>
-     <property name="text">
-      <string>Output:</string>
-     </property>
-    </widget>
     <widget class="QPushButton" name="pb5">
      <property name="geometry">
       <rect>
@@ -469,16 +449,6 @@ p, li { white-space: pre-wrap; }
       <string>TCI_20m</string>
      </property>
     </widget>
-    <widget class="QLineEdit" name="q7">
-     <property name="geometry">
-      <rect>
-       <x>90</x>
-       <y>580</y>
-       <width>341</width>
-       <height>20</height>
-      </rect>
-     </property>
-    </widget>
     <widget class="QDateEdit" name="da1">
      <property name="geometry">
       <rect>
@@ -495,7 +465,7 @@ p, li { white-space: pre-wrap; }
        <second>0</second>
        <year>2023</year>
        <month>9</month>
-       <day>1</day>
+       <day>15</day>
       </datetime>
      </property>
     </widget>
@@ -515,18 +485,8 @@ p, li { white-space: pre-wrap; }
        <second>0</second>
        <year>2023</year>
        <month>9</month>
-       <day>5</day>
+       <day>20</day>
       </datetime>
-     </property>
-    </widget>
-    <widget class="QComboBox" name="cblista">
-     <property name="geometry">
-      <rect>
-       <x>80</x>
-       <y>90</y>
-       <width>351</width>
-       <height>22</height>
-      </rect>
      </property>
     </widget>
     <widget class="QLabel" name="label_13">
@@ -534,12 +494,15 @@ p, li { white-space: pre-wrap; }
       <rect>
        <x>10</x>
        <y>30</y>
-       <width>351</width>
+       <width>361</width>
        <height>41</height>
       </rect>
      </property>
      <property name="text">
       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;You can create footprint GeoJSON files on &lt;a href=&quot;https://geojson.io/&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;https://geojson.io/&lt;/span&gt;&lt;/a&gt; and export.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+     </property>
+     <property name="openExternalLinks">
+      <bool>true</bool>
      </property>
     </widget>
     <widget class="QLabel" name="label_15">
@@ -624,19 +587,6 @@ p, li { white-space: pre-wrap; }
      </property>
      <property name="text">
       <string>ALL</string>
-     </property>
-    </widget>
-    <widget class="QToolButton" name="path">
-     <property name="geometry">
-      <rect>
-       <x>450</x>
-       <y>580</y>
-       <width>31</width>
-       <height>21</height>
-      </rect>
-     </property>
-     <property name="text">
-      <string>...</string>
      </property>
     </widget>
     <widget class="QCheckBox" name="B07_20m">
@@ -918,19 +868,6 @@ p, li { white-space: pre-wrap; }
       <string>Download status</string>
      </property>
     </widget>
-    <widget class="QToolButton" name="path_1">
-     <property name="geometry">
-      <rect>
-       <x>450</x>
-       <y>90</y>
-       <width>31</width>
-       <height>21</height>
-      </rect>
-     </property>
-     <property name="text">
-      <string>...</string>
-     </property>
-    </widget>
     <widget class="QLabel" name="label_20">
      <property name="geometry">
       <rect>
@@ -950,7 +887,7 @@ p, li { white-space: pre-wrap; }
        <x>450</x>
        <y>120</y>
        <width>121</width>
-       <height>71</height>
+       <height>81</height>
       </rect>
      </property>
      <property name="text">
@@ -960,21 +897,80 @@ p, li { white-space: pre-wrap; }
       <bool>true</bool>
      </property>
     </widget>
-    <widget class="QCheckBox" name="OPEN">
+    <widget class="QWidget" name="layoutWidget">
      <property name="geometry">
       <rect>
-       <x>490</x>
-       <y>580</y>
-       <width>81</width>
-       <height>21</height>
+       <x>80</x>
+       <y>90</y>
+       <width>401</width>
+       <height>31</height>
       </rect>
      </property>
-     <property name="text">
-      <string>Open Folder</string>
+     <layout class="QGridLayout" name="gridLayout_2">
+      <item row="0" column="1">
+       <widget class="QToolButton" name="path_1">
+        <property name="text">
+         <string>...</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="0">
+       <widget class="QComboBox" name="cblista"/>
+      </item>
+     </layout>
+    </widget>
+    <widget class="QWidget" name="layoutWidget">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>571</y>
+       <width>561</width>
+       <height>31</height>
+      </rect>
      </property>
-     <property name="checked">
-      <bool>true</bool>
-     </property>
+     <layout class="QGridLayout" name="gridLayout">
+      <item row="0" column="0">
+       <widget class="QLabel" name="label_12">
+        <property name="font">
+         <font>
+          <pointsize>9</pointsize>
+          <weight>75</weight>
+          <bold>true</bold>
+         </font>
+        </property>
+        <property name="text">
+         <string>Output:</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="1">
+       <widget class="QLineEdit" name="q7">
+        <property name="dragEnabled">
+         <bool>false</bool>
+        </property>
+        <property name="clearButtonEnabled">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="2">
+       <widget class="QToolButton" name="path">
+        <property name="text">
+         <string>...</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="3">
+       <widget class="QCheckBox" name="OPEN">
+        <property name="text">
+         <string>Open Folder</string>
+        </property>
+        <property name="checked">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+     </layout>
     </widget>
    </widget>
   </widget>
@@ -988,7 +984,7 @@ p, li { white-space: pre-wrap; }
     </rect>
    </property>
    <property name="text">
-    <string>Sentinel 2 - version 2.1.1</string>
+    <string>Sentinel 2 - version 2.1.2</string>
    </property>
   </widget>
  </widget>

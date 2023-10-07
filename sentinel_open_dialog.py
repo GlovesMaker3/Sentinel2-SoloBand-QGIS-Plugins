@@ -50,26 +50,6 @@ from qgis.PyQt.QtCore import QVariant
 from PyQt5.QtCore import QDate
 from qgis.core import QgsVectorLayer
 
-# Sprawdź, czy biblioteka jest dostępna
-try:
-    from sentinelsat import SentinelAPI, read_geojson, geojson_to_wkt, make_path_filter
-except ImportError:
-    # Jeśli biblioteka nie jest dostępna, można ją zainstalować
-    import subprocess
-    import sys
-
-    # Ustal ścieżkę do interpretera Pythona QGIS
-    python_path = sys.executable
-
-    # Zainstaluj bibliotekę sentinelsat za pomocą pip
-    try:
-        subprocess.check_call([python_path, "-m", "pip", "install", "sentinelsat"])
-    except subprocess.CalledProcessError as e:
-        iface.messageBar().pushMessage("Błąd", f"Nie udało się zainstalować biblioteki sentinelsat: {e}", level=Qgis.Critical)
-    else:
-        # Po zainstalowaniu biblioteki można ją zaimportować
-        from sentinelsat import SentinelAPI, read_geojson, geojson_to_wkt, make_path_filter
-print('launched libraries')
 
 
 # This loads your .ui file so that PyQt can populate your plugin with the elements from Qt Designer
@@ -147,7 +127,6 @@ class SentinelOpenDialog(QtWidgets.QDialog, FORM_CLASS):
         }
 
 
-
         self.down_active = False
 
         self.folder_opened = False
@@ -165,9 +144,16 @@ class SentinelOpenDialog(QtWidgets.QDialog, FORM_CLASS):
 
 
         if selected_dir:
-            self.output_dir = selected_dir
+            self.output_dir = selected_dir.replace('/', '\\')
             self.q7.setText(self.output_dir)  # Ustawienie ścieżki jako tekst przycisku
+
             print("Wybrany katalog:", self.output_dir)
+
+
+
+
+
+
 
     # Dodaje wszystkie warstwy z mapy do listy
     def populateLayerComboBox(self):
@@ -178,49 +164,10 @@ class SentinelOpenDialog(QtWidgets.QDialog, FORM_CLASS):
         # Get a list of map layers from the QgsProject
         layers = QgsProject.instance().mapLayers().values()
 
-        #__ Bylo - kazda warstwa na liscie cb
-        # # Add layer names to the combobox
-        # for layer in layers:
-        #     self.cblista.addItem(layer.name())
 
-        # __ bylo - tylko shp i geojson
-        # Add layer names to the combobox only if they are SHP or GeoJSON
         for layer in layers:
             if layer.source().lower().endswith('.shp') or layer.source().lower().endswith('.geojson'):
                 self.cblista.addItem(layer.name())
-
-        # # __ JEST -  geojson
-        # # Add layer names to the combobox only if they are SHP or GeoJSON
-        # for layer in layers:
-        #     if layer.source().lower().endswith('.geojson'):
-        #         self.cblista.addItem(layer.name())
-
-    # def wybieraniewarstwzmapy(self):
-    #     selected_layer_name = self.cblista.currentText()  # Get the name of the selected layer
-    #     print(f'Wybrana warstwa: {selected_layer_name}')
-
-# # WYBIERANIE Z LISTY ROZWIJALNEJ
-#     def wybieraniewarstwzmapy(self, index):
-#         print('wybieraniewarstwzmapy(self, index):')
-#         selected_layer_name = self.cblista.currentText()  # Get the name of the selected layer
-#         print(f'Wybrana warstwa: {selected_layer_name}')
-#         if selected_layer_name:
-#             if selected_layer_name.lower().endswith('.shp'):
-#                 self.process_shp_to_geojson(selected_layer_name)
-#                 print('WYBIERANIE Z LISTY ROZWIJALNEJ- if *shp')
-#             else:
-#                 self.process_geojson(selected_layer_name)
-#                 print('WYBIERANIE Z LISTY ROZWIJALNEJ - else')
-
-
-# # WYBIERANIE Z LISTY ROZWIJALNEJ
-#     def wybieraniewarstwzmapy(self, index):
-#         print('wybieraniewarstwzmapy(self, index):')
-#         selected_layer_name = self.cblista.currentText()  # Get the name of the selected layer
-#         print(f'Wybrana warstwa: {selected_layer_name}')
-#
-#         self.process_shp_to_geojson()
-
 
 
 
@@ -237,45 +184,8 @@ class SentinelOpenDialog(QtWidgets.QDialog, FORM_CLASS):
 
 
 
-        #
-        # shp_file_dialog = QFileDialog()
-        # shp_file_dialog.setNameFilter("Shapefile (*.shp)")
-        # shp_file_dialog.setFileMode(QFileDialog.ExistingFile)
-        #
-        # if shp_file_dialog.exec_():
-        #     selected_layer_name = shp_file_dialog.selectedFiles()[0]
-        #     print(f'Wybrana warstwa: {selected_layer_name}')
-        #
-        #     self.process_shp_to_geojson(selected_layer_name)
-        # else:
-        #     print("Anulowano wybieranie pliku SHP")
 
 
-
-# otwiera plik do shp ale inne bilbioteki os
-
-
-
-    # def wybieraniewarstwzmapy(self, index):
-    #     print('wybieraniewarstwzmapy(self, index):')
-    #
-    #     shp_file_dialog = QFileDialog()
-    #     shp_file_dialog.setNameFilter("Shapefile (*.shp)")
-    #     shp_file_dialog.setFileMode(QFileDialog.ExistingFile)
-    #
-    #     if shp_file_dialog.exec_():
-    #         selected_layer_name = shp_file_dialog.selectedFiles()[0]
-    #         print(f'Wybrana warstwa: {selected_layer_name}')
-    #
-    #         # Sprawdź, czy rozszerzenie pliku to ".shp"
-    #         _, file_extension = os.path.splitext(selected_layer_name)
-    #         if file_extension.lower() == '.shp':
-    #             print(f'Prawidłowa warstwa: {selected_layer_name}')
-    #             self.process_shp_to_geojson(selected_layer_name)
-    #         else:
-    #             print("Wybrany plik nie jest plikiem SHP")
-    #     else:
-    #         print("Anulowano wybieranie pliku SHP")
 
 
 
@@ -430,8 +340,6 @@ class SentinelOpenDialog(QtWidgets.QDialog, FORM_CLASS):
         else:
             print("Nie udało się wczytać nowej warstwy GeoJSON do QGIS.")
 
-    # def get_file_name(self, file_path):
-    #     return os.path.splitext(os.path.basename(file_path))[0]
 
 
 
@@ -439,6 +347,10 @@ class SentinelOpenDialog(QtWidgets.QDialog, FORM_CLASS):
     def handle_pb4_click(self):
         self.pb4_clicked = True
         self.login()
+
+
+
+
 
     def login(self):
         #print('login(self)')
@@ -454,9 +366,8 @@ class SentinelOpenDialog(QtWidgets.QDialog, FORM_CLASS):
             print(f'Password: {value3}')
 
 
-
             self.api = SentinelAPI(value2, value3, value1)
-            #api = SentinelAPI('GlovesMaker123', 'd63613255D', 'https://scihub.copernicus.eu/dhus')
+
             self.q4.setText("Connection successful. The plugin won't verify password compatibility if you've entered it incorrectly; it's best to restart the plugin. We don't collect login data. If you want to see login and image retrieval details, open a Python window in QGIS.")
             #Tworzenie komunikatu
             message_box = QtWidgets.QMessageBox()
@@ -467,9 +378,9 @@ class SentinelOpenDialog(QtWidgets.QDialog, FORM_CLASS):
 
             message_box.setStandardButtons(QtWidgets.QMessageBox.Ok)
             message_box.exec_()
-        #self.api = SentinelAPI('GlovesMaker123', 'd63613255D', 'https://scihub.copernicus.eu/dhus')
+
         #self.api = SentinelAPI('fishfounder', 'LifeBelowWather1123', 'https://scihub.copernicus.eu/dhus')
-            print('ok_03_10_2023_login')
+            print('ok_07_10_2023_login')
 
 
             ################################# Search and download ########################################
@@ -478,111 +389,12 @@ class SentinelOpenDialog(QtWidgets.QDialog, FORM_CLASS):
 
 
 
-    # def wybieraniewarstwzmapy(self, index):
-    #     selected_layer_name = self.cblista.currentText()  # Get the name of the selected layer
-    #
-    #     if selected_layer_name.lower().endswith('.shp'):
-    #         print(f'Selected layer: {selected_layer_name} (SHP file)')
-    #         QtWidgets.QMessageBox.warning(self, 'Attention',
-    #                                       f'WARNING: The program works only with *GeoJSON format. Selected layer: {selected_layer_name} (not a GeoJSON file - you can load a *Shp file alongside)')
-    #     else:
-    #         print(f'Selected layer: {selected_layer_name}')
-
-
 
     def handle_pb5_click(self):
         print('handle_pb5_click(self):')
         #self.pb5_clicked = True
         self.download()
 
-
-    def download_band(self, s3, output_dir):
-        print('download_band(self, s3, output_dir):')
-        n = 0
-        for x in s3:
-            n += 1
-            print('_2_: ' + str(n))
-            path_filter = make_path_filter("*{}".format(x))
-            print(path_filter)
-
-            self.api.download_all(self.products, directory_path=output_dir, nodefilter=path_filter)
-
-            print('\n')
-            print("Download for - *{}".format(x))
-            self.Status_pobierania.setText("Download for - *{}".format(x))
-
-
-
-    # def download_band(self, s3, output_dir):
-    #     print('download_band(self, s3, output_dir):')
-    #     n = 0
-    #     for x in s3:
-    #         n += 1
-    #         print('_2_: ' + str(n))
-    #         path_filter = make_path_filter("*{}".format(x))
-    #         print(path_filter)
-    #
-    #         # Dodaj logikę sprawdzającą online/offline i wyświetl odpowiedni komunikat
-    #         product_info = self.api.get_product_odata(self.products)
-    #         is_online = product_info.get('Online', False)
-    #
-    #         if is_online:
-    #             print(f'Product {self.products} is online. Starting download.')
-    #         else:
-    #             print(f'Product {self.products} is not online. Skipping download.')
-    #
-    #         # Bez zmian w pozostałej części funkcji
-    #         self.api.download_all(self.products, directory_path=output_dir, nodefilter=path_filter)
-    #
-    #         print('\n')
-    #         print("Download for - *{}".format(x))
-    #         self.Status_pobierania.setText("Download for - *{}".format(x))
-
-    # def download_band(self, s3, output_dir):
-    #     print('download_band(self, s3, output_dir):')
-    #     n = 0
-    #     for x in s3:
-    #         n += 1
-    #         print('_2_: ' + str(n))
-    #         path_filter = make_path_filter("*{}".format(x))
-    #         print(path_filter)
-    #
-    #         try:
-    #             # Pobierz informacje o produkcie
-    #             product_info = self.api.get_product_odata(self.products)
-    #             is_online = product_info.get('Online', False)
-    #
-    #             if is_online:
-    #                 print(f'Product {self.products} is online. Starting download.')
-    #                 self.api.download(self.products, directory_path=output_dir)
-    #             else:
-    #                 print(f'Product {self.products} is not online.')
-    #                 QtWidgets.QMessageBox.warning(self, 'Attention', 'Log in before downloading.')
-    #
-    #             print('\n')
-    #             print("Download for - *{}".format(x))
-    #             self.Status_pobierania.setText("Download for - *{}".format(x))
-    #
-    #         except Exception as e:
-    #             print("Błąd podczas pobierania produktów z Sentinel Hub API:", e)
-    #             print("Zdjęcie jest offline lub wystąpił inny problem.")
-
-    # OTWIERA SIĘ TYLKO ZA 1 RAZEM
-    # def open_file(self, output_dir):
-    #
-    #     if os.path.exists(output_dir):
-    #         if not self.folder_opened:  # Sprawdzamy, czy folder nie został już otwarty wcześniej
-    #             if sys.platform == 'win32':
-    #                 subprocess.Popen(['explorer', output_dir], shell=True)
-    #             elif sys.platform == 'darwin':
-    #                 subprocess.Popen(['open', output_dir])
-    #             else:
-    #                 subprocess.Popen(['xdg-open', output_dir])
-    #             self.folder_opened = True  # Ustawiamy stan otwarcia folderu na True
-    #         else:
-    #             print('Folder już został otwarty.')
-    #     else:
-    #         print(f'Folder nie istnieje: {output_dir}')
 
     def open_file(self, output_dir):
         try:
@@ -601,6 +413,27 @@ class SentinelOpenDialog(QtWidgets.QDialog, FORM_CLASS):
                 print(f'Folder does not exist: {output_dir}')
         except Exception as e:
             print(f"An error occurred while opening the directory: {str(e)}")
+
+
+    def download_band(self, s3, output_dir):
+        print('download_band(self, s3, output_dir):')
+        n = 0
+        for x in s3:
+            n += 1
+            print('_2_: ' + str(n))
+            path_filter = make_path_filter("*{}".format(x))
+            print(path_filter)
+            print('start')
+            print(s3)
+            print(output_dir)
+            self.api.download_all(self.products, directory_path=output_dir, nodefilter=path_filter)
+
+            print('\n')
+            print("Download for - *{}".format(x))
+            self.Status_pobierania.setText("Download for - *{}".format(x))
+
+
+
 
 
     def download(self):
@@ -679,7 +512,9 @@ class SentinelOpenDialog(QtWidgets.QDialog, FORM_CLASS):
         print(identyfikatory_produktow)
         print(len(identyfikatory_produktow))
         # Changing the message:
+        print('ok')
         QtWidgets.QMessageBox.warning(self, 'Attention', f'WARNING: {len(identyfikatory_produktow)} satellite scene(s) have been located for the selected spectral band.')
+
         # Iteracja przez wszystkie produkty w products_0
         z = 0
         for identyfikator_produktu in identyfikatory_produktow:
@@ -716,10 +551,6 @@ class SentinelOpenDialog(QtWidgets.QDialog, FORM_CLASS):
                                                cloudcoverpercentage=(0, self.cloud.value()),
                                                filename='{}'.format(informacje_o_produkcie['filename']))
 
-            else:
-                QtWidgets.QMessageBox.warning(self, 'Attention', 'The scene is offline or no scenes were found to download')
-            # print(identyfikatory_produktow[k])
-
 
     ###################### 10m ##############################
 
@@ -755,7 +586,10 @@ class SentinelOpenDialog(QtWidgets.QDialog, FORM_CLASS):
                     s3 = []
                     for band in selected_bands:
                         s3.extend(self.band_filenames.get(band, []))
-                        #print(s3[:])
+                        print(s3[:])
+
+
+                # print(identyfikatory_produktow[k])
 
 
                 if not s3:
@@ -764,19 +598,26 @@ class SentinelOpenDialog(QtWidgets.QDialog, FORM_CLASS):
 
                 print(s3[:])
 
-
                 output_dir = self.q7.text()
+                print('test')
+                print(output_dir)
+
+                # if self.OPEN.isChecked():
+                #     self.open_file(output_dir)
+
+
                 self.download_band(s3, output_dir)
 
-                if self.OPEN.isChecked():
-                    self.open_file(output_dir)
-                    print(output_dir)
+
+                    #print(output_dir)
 
 
-
+            # else:
+            #     QtWidgets.QMessageBox.warning(self, 'Attention','The scene is offline or no scenes were found to download')
 
             # Resetowanie listy s3 dla kolejnego produktu
             s3 = []
+
 
 
 

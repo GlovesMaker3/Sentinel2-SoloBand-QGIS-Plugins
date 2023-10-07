@@ -6,7 +6,7 @@
 name=Sentinel2 SoloBand
 qgisMinimumVersion=3.0
 description=Sentinel2 SoloBand is an advanced plugin designed to facilitate the convenient and precise retrieval of individual channels from the Sentinel-2 mission.
-version=2.1.1
+version=2.1.2
 author=FishFounder
 email=fishfounderstartup@gmail.com
 
@@ -18,16 +18,22 @@ repository=https://github.com/GlovesMaker3/sentinel2
 
 # Recommended items:
 
+
+
 hasProcessingProvider=no
 # Uncomment the following line and add your changelog:
 # changelog=
+	version 2.1.2 - Improved image downloads and status checking, code refactoring, and addition of necessary libraries to the virtual environment, removed folder opening functionality.
+	version 2.1.1 - The goal is to enhance the user experience and make sure essential libraries such as geojson, geomet, html2text, sentinelsat, and tqdm are installed seamlessly. Changing the application interface.
+	version 2.0.9 - add web map from metadane.
+	version 2.0.9 - modified interjection.
 
 # Tags are comma separated with spaces allowed
 tags=OpenAccessHub, copernicus, download, sentinel2, sentinel, soloband, band, sentinel ,images 
 
 homepage=https://sentinel2-soloband-29fa5248a981.herokuapp.com/
 category=Plugins
-icon=crescent-2023236_640.png
+icon=icon.png
 # experimental flag
 experimental=False
 
@@ -38,6 +44,7 @@ deprecated=False
 # (or upgraded) can be specified.
 # Check the documentation for more information.
 # plugin_dependencies=
+
 
 Category of the plugin: Raster, Vector, Database or Web
 # category=Web

@@ -48,7 +48,7 @@ PY_FILES = \
 
 UI_FILES = sentinel_open_dialog_base.ui
 
-EXTRAS = metadata.txt crescent-2023236_640.png
+EXTRAS = metadata.txt icon.png
 
 EXTRA_DIRS =
 
