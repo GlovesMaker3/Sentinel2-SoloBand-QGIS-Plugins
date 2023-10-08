@@ -1,49 +1,57 @@
-# This file contains metadata for your plugin.
-
-# This file should be included when you package your plugin.# Mandatory items:
+# This file contains metadata.
 
 [general]
 name=Sentinel2 SoloBand
 qgisMinimumVersion=3.0
-description=Sentinel2 SoloBand is an advanced plugin designed to facilitate the convenient and precise retrieval of individual channels from the Sentinel-2 mission.
-version=2.1.2
+description=Sentinel2 SoloBand is a plugin for easily searching for individual bands in Sentinel-2 imagery.
+version=2.1.4
 author=FishFounder
 email=fishfounderstartup@gmail.com
 
-about=The plugin is continuously evolving and offers SHP to GeoJSON file conversion. It allows for the download of individual channels at 10m and 20m resolutions. All scenes for a given time period are downloaded unless they are offline: Sentinel2 SoloBand is an advanced plugin designed to facilitate the convenient and precise retrieval of individual channels from the Sentinel-2 mission.
+about=
+	The plugin allows for the retrieval of individual spectral channels from the Sentinel-2 mission at resolutions of 10m and 20m for an area specified in the GeoJSON file. Additionally, it enables the conversion of SHP files to GeoJSON format for added convenience. Through the built-in filter, users can specify a time range and account for cloud cover. It's important to note that the plugin does not download images that are offline. The plugin is continuously evolving.
+
+	Feel free to visit <a href="https://sentinel2-soloband-29fa5248a981.herokuapp.com/">the website</a> with a description of how the plugin works.
+
+	For error reporting, please contact us at <a href="mailto:fishfounderstartup@gmail.com">fishfounderstartup@gmail.com</a>.
+
+	The plugin utilizes <a href="https://scihub.copernicus.eu/dhus/#/home">the Copernicus Open Access Hub.</a>."
+	<a href='https://scihub.copernicus.eu/dhus/#/self-registration'>Here </a>,  you can create an account.
 
 tracker=https://github.com/GlovesMaker3/sentinel2/issues
 repository=https://github.com/GlovesMaker3/sentinel2
 # End of mandatory metadata
 
 # Recommended items:
-
-
-
 hasProcessingProvider=no
+
 # Uncomment the following line and add your changelog:
-# changelog=
-	version 2.1.2 - Improved image downloads and status checking, code refactoring, and addition of necessary libraries to the virtual environment, removed folder opening functionality.
-	version 2.1.1 - The goal is to enhance the user experience and make sure essential libraries such as geojson, geomet, html2text, sentinelsat, and tqdm are installed seamlessly. Changing the application interface.
-	version 2.0.9 - add web map from metadane.
-	version 2.0.9 - modified interjection.
+changelog=
+    version 2.1.4
+        	- changing the icon, interface, metadane
+    version 2.1.3
+        	- changing the icon, interface.
+    version 2.1.2
+        	- improved image downloads and status checking, code refactoring, and addition of necessary libraries to the virtual environment, removed folder opening functionality.
+    version 2.1.1
+        	- the goal is to enhance the user experience and make sure essential libraries such as geojson, geomet, html2text, sentinelsat, and tqdm are installed seamlessly. Changing the application interface.
+    version 2.1.1
+        	- add web map from metadane.
+    version 2.0.9
+        	- modified intrerface.
 
 # Tags are comma separated with spaces allowed
-tags=OpenAccessHub, copernicus, download, sentinel2, sentinel, soloband, band, sentinel ,images 
+tags=
+	OpenAccessHub, copernicus, download, sentinel2, sentinel, soloband, band, images 
 
 homepage=https://sentinel2-soloband-29fa5248a981.herokuapp.com/
-category=Plugins
+category=Web
 icon=icon.png
 # experimental flag
 experimental=False
 
 # deprecated flag (applies to the whole plugin, not just a single version)
 deprecated=False
-
-# Since QGIS 3.8, a comma separated list of plugins to be installed
-# (or upgraded) can be specified.
-# Check the documentation for more information.
-# plugin_dependencies=
 
 
 Category of the plugin: Raster, Vector, Database or Web
