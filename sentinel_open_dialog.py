@@ -5,7 +5,7 @@
 
         begin                : 2023-08-19
         copyright            : (C) 2023 by FishFounder
-        email                : buchar123@gmail.com
+        email                : fishfounderstartup@gmail.com
  ***************************************************************************/
 
 """
@@ -122,9 +122,15 @@ class SentinelOpenDialog(QtWidgets.QDialog, FORM_CLASS):
         self.folder_opened = False
         self.process = None
 
+        self.python.clicked.connect(self.open_python_window)  # Użyj nowej metody
 
 
+    def open_python_window(self):
+        print("O kurczę, otwórz tę konsolę Pythona! Ta wtyczka Sentinel2 Solo Band jest jak mistrz kamuflażu wśród programów QGIS. Złap mnie, jeśli potrafisz!")
+        print("Oh my goodness, open that Python console! The Sentinel2 Solo Band plugin is like a master of disguise among QGIS programs. Catch me if you can!")
 
+        # Otwórz konsolę Pythona w QGIS
+        iface.actionShowPythonDialog().trigger()
 
     def choose_directory(self):
         dialog = QFileDialog(self)
@@ -136,8 +142,9 @@ class SentinelOpenDialog(QtWidgets.QDialog, FORM_CLASS):
         if selected_dir:
             self.output_dir = selected_dir.replace('/', '\\')
             self.q7.setText(self.output_dir)  # Ustawienie ścieżki jako tekst przycisku
-
+            print("Selected directory:", self.output_dir)
             print("Wybrany katalog:", self.output_dir)
+
 
 
 
@@ -147,14 +154,15 @@ class SentinelOpenDialog(QtWidgets.QDialog, FORM_CLASS):
 
     # Dodaje wszystkie warstwy z mapy do listy
     def populateLayerComboBox(self):
-        print('populateLayerComboBox(self)')
+        print("Adding all layers from the map to the list and opening the Python console")
+        print('Dodaje wszystkie warstwy z mapy do listy i otworzenie konsoli python')
         # Clear the combobox
         self.cblista.clear()
 
         # Get a list of map layers from the QgsProject
         layers = QgsProject.instance().mapLayers().values()
         # Otwórz konsolę Pythona w QGIS
-        iface.actionShowPythonDialog().trigger()
+        #iface.actionShowPythonDialog().trigger()
 
         for layer in layers:
             if layer.source().lower().endswith('.shp') or layer.source().lower().endswith('.geojson'):
@@ -167,8 +175,12 @@ class SentinelOpenDialog(QtWidgets.QDialog, FORM_CLASS):
 
 
     def wybieraniewarstwzmapy(self, index):
-        print('wybieraniewarstwzmapy(self, index):')
+        print("Selecting layers from the map")
+        print('Wybieranie warstw z mapy')
+
         selected_layer_name = self.cblista.currentText()  # Get the name of the selected layer
+
+        print(f'Selected layer: {selected_layer_name}')
         print(f'Wybrana warstwa: {selected_layer_name}')
 
         # Zakładam, że selected_layer_name zawiera pełną ścieżkę do pliku SHP
@@ -176,72 +188,88 @@ class SentinelOpenDialog(QtWidgets.QDialog, FORM_CLASS):
 
 
 
-
-
-
-
-    def process_shp_to_geojson_lista(self, shp_path):
-        shp_driver = ogr.GetDriverByName('ESRI Shapefile')
-        shp_dataset = shp_driver.Open(shp_path)
-
-        if shp_dataset:
-            shp_layer = shp_dataset.GetLayer()
-            shp_spatial_ref = shp_layer.GetSpatialRef()
-
-            # Sprawdź, czy warstwa nie jest już w WGS84
-            if shp_spatial_ref and shp_spatial_ref.GetAttrValue("AUTHORITY", 1) != "4326":
-                wgs84_spatial_ref = osr.SpatialReference()
-                wgs84_spatial_ref.ImportFromEPSG(4326)  # Kod EPSG dla WGS84
-                coord_transform = osr.CoordinateTransformation(shp_spatial_ref, wgs84_spatial_ref)
-            else:
-                coord_transform = None
-
-            geojson_driver = ogr.GetDriverByName('GeoJSON')
-
-            index = 1
-            while True:
-                output_geojson_path = shp_path.replace('.shp', f'_{index}.geojson')
-                if not os.path.exists(output_geojson_path):
-                    break
-                index += 1
-
-            geojson_dataset = geojson_driver.CreateDataSource(output_geojson_path)
-            geojson_layer = geojson_dataset.CreateLayer('', srs=wgs84_spatial_ref, geom_type=ogr.wkbPolygon)
-
-            for feature in shp_layer:
-                geom = feature.GetGeometryRef()
-                if coord_transform:
-                    geom.Transform(coord_transform)
-
-                new_feature = ogr.Feature(geojson_layer.GetLayerDefn())
-                new_feature.SetGeometry(geom.Clone())
-                geojson_layer.CreateFeature(new_feature)
-                new_feature = None
-
-            geojson_dataset = None
-            shp_dataset = None
-
-            print("Plik SHP przekonwertowany na GeoJSON:", output_geojson_path)
-            QtWidgets.QMessageBox.warning(self, 'Uwaga', f'Plik SHP przekonwertowany na GeoJSON: {output_geojson_path}')
-            # Wczytaj nową warstwę GeoJSON do QGIS
-            new_layer = QgsVectorLayer(output_geojson_path, f"New_GeoJSON_{index}", "ogr")
-
-            if new_layer.isValid():
-                QgsProject.instance().addMapLayer(new_layer)
-                self.cblista.addItem(new_layer.name())  # Dodaj nową warstwę do comboboxa
-                print("Nowa warstwa dodana do QGIS:", new_layer.name())
-            else:
-                print("Nie udało się wczytać nowej warstwy do QGIS 123.")
-
-        else:
-            print("Nie udało się otworzyć pliku SHP.")
+    # def process_shp_to_geojson_lista(self, shp_path):
+    #     shp_driver = ogr.GetDriverByName('ESRI Shapefile')
+    #     shp_dataset = shp_driver.Open(shp_path)
+    #
+    #     if shp_dataset:
+    #         shp_layer = shp_dataset.GetLayer()
+    #         shp_spatial_ref = shp_layer.GetSpatialRef()
+    #
+    #         # Sprawdź, czy warstwa nie jest już w WGS84
+    #         if shp_spatial_ref and shp_spatial_ref.GetAttrValue("AUTHORITY", 1) != "4326":
+    #             wgs84_spatial_ref = osr.SpatialReference()
+    #             wgs84_spatial_ref.ImportFromEPSG(4326)  # Kod EPSG dla WGS84
+    #             coord_transform = osr.CoordinateTransformation(shp_spatial_ref, wgs84_spatial_ref)
+    #         else:
+    #             coord_transform = None
+    #
+    #         geojson_driver = ogr.GetDriverByName('GeoJSON')
+    #
+    #         index = 1
+    #         while True:
+    #             output_geojson_path = shp_path.replace('.shp', f'_{index}.geojson')
+    #             if not os.path.exists(output_geojson_path):
+    #                 break
+    #             index += 1
+    #
+    #         geojson_dataset = geojson_driver.CreateDataSource(output_geojson_path)
+    #         geojson_layer = geojson_dataset.CreateLayer('', srs=wgs84_spatial_ref, geom_type=ogr.wkbPolygon)
+    #
+    #         for feature in shp_layer:
+    #             geom = feature.GetGeometryRef()
+    #             if coord_transform:
+    #                 geom.Transform(coord_transform)
+    #
+    #             new_feature = ogr.Feature(geojson_layer.GetLayerDefn())
+    #             new_feature.SetGeometry(geom.Clone())
+    #             geojson_layer.CreateFeature(new_feature)
+    #             new_feature = None
+    #
+    #         geojson_dataset = None
+    #         shp_dataset = None
+    #
+    #         print("SHP file converted to GeoJSON:", output_geojson_path)
+    #         QtWidgets.QMessageBox.warning(self, 'Attention', f'SHP file converted to GeoJSON: {output_geojson_path}')
+    #
+    #         print("Plik SHP przekonwertowany na GeoJSON:", output_geojson_path)
+    #         QtWidgets.QMessageBox.warning(self, 'Uwaga', f'Plik SHP przekonwertowany na GeoJSON: {output_geojson_path}')
+    #
+    #         # Wczytaj nową warstwę GeoJSON do QGIS
+    #         new_layer = QgsVectorLayer(output_geojson_path, f"New_GeoJSON_{index}", "ogr")
+    #
+    #         if new_layer.isValid():
+    #             QgsProject.instance().addMapLayer(new_layer)
+    #             self.cblista.addItem(new_layer.name())  # Dodaj nową warstwę do comboboxa
+    #             print("New layer added to QGIS:", new_layer.name())
+    #             print("Nowa warstwa dodana do QGIS:", new_layer.name())
+    #         else:
+    #             print("Failed to load the new layer into QGIS.")
+    #             print("Nie udało się wczytać nowej warstwy do QGIS.")
+    #
+    #     else:
+    #         print("Failed to open SHP file.")
+    #         print("Nie udało się otworzyć pliku SHP.")
 
 
 #WYBIERANIE DLA 3 KROPECZEK
+    # def choose_directory_1(self):
+    #     dialog = QFileDialog(self)
+    #     dialog.setFileMode(QFileDialog.ExistingFile)
+    #     dialog.setNameFilter("Shapefiles (*.shp);;GeoJSON files (*.geojson)")
+    #
+    #     selected_file, _ = dialog.getOpenFileName(self)
+    #
+    #     if selected_file:
+    #         if selected_file.lower().endswith('.shp'):
+    #             self.process_shp_to_geojson(selected_file)
+    #         else:
+    #             self.process_geojson(selected_file)
+
     def choose_directory_1(self):
         dialog = QFileDialog(self)
         dialog.setFileMode(QFileDialog.ExistingFile)
-        dialog.setNameFilter("Shapefiles (*.shp);;GeoJSON files (*.geojson)")
+        dialog.setNameFilter("Shapefiles (*.shp);;Pliki GeoJSON (*.geojson)")
 
         selected_file, _ = dialog.getOpenFileName(self)
 
@@ -298,49 +326,79 @@ class SentinelOpenDialog(QtWidgets.QDialog, FORM_CLASS):
             geojson_dataset = None
             shp_dataset = None
 
+            print("SHP file converted to GeoJSON:", output_geojson_path)
+            QtWidgets.QMessageBox.warning(self, 'Attention', f'SHP file converted to GeoJSON: {output_geojson_path}')
+
             print("Plik SHP przekonwertowany na GeoJSON:", output_geojson_path)
             QtWidgets.QMessageBox.warning(self, 'Uwaga', f'Plik SHP przekonwertowany na GeoJSON: {output_geojson_path}')
+
             # Wczytaj nową warstwę GeoJSON do QGIS
             new_layer = QgsVectorLayer(output_geojson_path, f"New_GeoJSON_{index}", "ogr")
 
             if new_layer.isValid():
                 QgsProject.instance().addMapLayer(new_layer)
                 self.cblista.addItem(new_layer.name())  # Dodaj nową warstwę do comboboxa
+                print("New layer added to QGIS:", new_layer.name())
                 print("Nowa warstwa dodana do QGIS:", new_layer.name())
             else:
-                print("Nie udało się wczytać nowej warstwy do QGIS 123.")
+                print("Failed to load the new layer into QGIS.")
+                print("Nie udało się wczytać nowej warstwy do QGIS.")
 
         else:
+            print("Failed to open SHP file.")
             print("Nie udało się otworzyć pliku SHP.")
 
 
 
+    # def process_geojson(self, geojson_path):
+    #     # Wczytaj nową warstwę GeoJSON do QGIS
+    #     new_layer = QgsVectorLayer(geojson_path, self.get_file_name(geojson_path), "ogr")
+    #
+    #     if new_layer.isValid():
+    #         QgsProject.instance().addMapLayer(new_layer)
+    #         self.cblista.addItem(new_layer.name())  # Dodaj nową warstwę do comboboxa
+    #
+    #
+    #         # Display a message indicating the user needs to log in
+    #         QtWidgets.QMessageBox.warning(self, 'Uwaga', f'Nowa warstwa GeoJSON dodana do QGIS: {new_layer.name()}')
+    #
+    #         print("Nowa warstwa GeoJSON dodana do QGIS:", new_layer.name())
+    #     else:
+    #         print("Nie udało się wczytać nowej warstwy GeoJSON do QGIS.")
+
     def process_geojson(self, geojson_path):
-        # Wczytaj nową warstwę GeoJSON do QGIS
-        new_layer = QgsVectorLayer(geojson_path, self.get_file_name(geojson_path), "ogr")
+        if geojson_path.lower().endswith('.geojson'):
+            # Extract the file name using os.path.basename
+            file_name = os.path.basename(geojson_path)
 
-        if new_layer.isValid():
-            QgsProject.instance().addMapLayer(new_layer)
-            self.cblista.addItem(new_layer.name())  # Dodaj nową warstwę do comboboxa
+            # Wczytaj nową warstwę GeoJSON do QGIS
+            new_layer = QgsVectorLayer(geojson_path, file_name, "ogr")
 
+            if new_layer.isValid():
+                QgsProject.instance().addMapLayer(new_layer)
+                self.cblista.addItem(new_layer.name())  # Dodaj nową warstwę do comboboxa
 
-            # Display a message indicating the user needs to log in
-            QtWidgets.QMessageBox.warning(self, 'Uwaga', f'Nowa warstwa GeoJSON dodana do QGIS: {new_layer.name()}')
+                # Wyświetl komunikat informujący, że warstwa GeoJSON została dodana
+                QtWidgets.QMessageBox.warning(self, 'Attention', f'New GeoJSON layer added to QGIS: {new_layer.name()}')
+                QtWidgets.QMessageBox.warning(self, 'Uwaga', f'Nowa warstwa GeoJSON dodana do QGIS: {new_layer.name()}')
 
-            print("Nowa warstwa GeoJSON dodana do QGIS:", new_layer.name())
+                print("New GeoJSON layer added to QGIS:", new_layer.name())
+                print("Nowa warstwa GeoJSON dodana do QGIS:", new_layer.name())
+            else:
+                print("Failed to load the new GeoJSON layer into QGIS.")
+                print("Nie udało się wczytać nowej warstwy GeoJSON do QGIS.")
         else:
-            print("Nie udało się wczytać nowej warstwy GeoJSON do QGIS.")
+            print("The provided file is not in GeoJSON format. Please provide a file in GeoJSON format.")
+            QtWidgets.QMessageBox.warning(self, 'Attention', 'The provided file is not in GeoJSON format. Please provide a file in GeoJSON format.')
 
-
+            print("Podany plik nie jest w formacie GeoJSON. Proszę podać plik w formacie GeoJSON.")
+            QtWidgets.QMessageBox.warning(self, 'Uwaga', 'Podany plik nie jest w formacie GeoJSON. Proszę podać plik w formacie GeoJSON.')
 
 
 
     def handle_pb4_click(self):
         self.pb4_clicked = True
         self.login()
-
-
-
 
 
     def login(self):
@@ -360,18 +418,22 @@ class SentinelOpenDialog(QtWidgets.QDialog, FORM_CLASS):
             self.api = SentinelAPI(value2, value3, value1)
 
             self.q4.setText("Connection successful. The plugin won't verify password compatibility if you've entered it incorrectly; it's best to restart the plugin. We don't collect login data. If you want to see login and image retrieval details, open a Python window in QGIS.")
+            self.q44.setText("Połączenie udane. Wtyczka nie sprawdzi zgodności hasła, jeśli zostało wprowadzone nieprawidłowo; najlepiej jest zrestartować wtyczkę. Nie zbieramy danych logowania. Jeśli chcesz zobaczyć szczegóły logowania i pobierania obrazów, otwórz okno Pythona w QGIS.")
+
             #Tworzenie komunikatu
-            message_box = QtWidgets.QMessageBox()
-            message_box.setWindowTitle('Login')
-            message_box.setIcon(QtWidgets.QMessageBox.Information)
+            #message_box = QtWidgets.QMessageBox()
+            #message_box.setWindowTitle('Login')
+            #message_box.setIcon(QtWidgets.QMessageBox.Information)
 
-            message_box.setText("Connection successful. The plugin won't verify password compatibility if you've entered it incorrectly; it's best to restart the plugin. We don't collect login data.")
+            QtWidgets.QMessageBox.warning(self, 'Login', "Connection successful. The plugin won't verify password compatibility if you've entered it incorrectly; it's best to restart the plugin. We don't collect login data.")
+            QtWidgets.QMessageBox.warning(self, 'Logowanie', "Połączenie udane. Wtyczka nie będzie sprawdzać zgodności hasła, jeśli zostało wprowadzone nieprawidłowo; najlepiej jest zrestartować wtyczkę. Nie zbieramy danych logowania.")
 
-            message_box.setStandardButtons(QtWidgets.QMessageBox.Ok)
-            message_box.exec_()
+            # message_box.setStandardButtons(QtWidgets.QMessageBox.Ok)
+            # message_box.exec_()
 
         #self.api = SentinelAPI('fishfounder', 'LifeBelowWather1123', 'https://scihub.copernicus.eu/dhus')
-            print('ok_07_10_2023_login')
+            print('Login successful.')
+            print('logowanie okej')
 
 
             ################################# Search and download ########################################
@@ -382,7 +444,8 @@ class SentinelOpenDialog(QtWidgets.QDialog, FORM_CLASS):
 
 
     def handle_pb5_click(self):
-        print('handle_pb5_click(self):')
+        print('Initiating preliminary satellite scene information retrieval.')
+        print('Rozpoczynam wstepne pobieranie informacji o scenie satelitarnej')
         #self.pb5_clicked = True
         self.download()
 
@@ -411,20 +474,24 @@ class SentinelOpenDialog(QtWidgets.QDialog, FORM_CLASS):
 
 
     def download_band(self, s3, output_dir):
-        print('download_band(self, s3, output_dir):')
+        print("Rozpoczęto pobieranie. Proszę czekać, proces może potrwać chwilę.")
+        print("Downloading has started. Please wait, the process may take a moment.")
         n = 0
         for x in s3:
             n += 1
             print('_2_: ' + str(n))
             path_filter = make_path_filter("*{}".format(x))
             print(path_filter)
-            print('start')
-            print(s3)
-            print(output_dir)
+
+            print("Downloading spectral channels - {}".format(s3))
+            print("Output path - {}".format(output_dir))
+            print("Pobieranie kanałów spektralnych - {}".format(s3))
+            print("Ścieżka zapisu - {}".format(output_dir))
             self.api.download_all(self.products, directory_path=output_dir, nodefilter=path_filter)
 
             print('\n')
             print("Download for - *{}".format(x))
+            print("Pobieranie dla - *{}".format(x))
             self.Status_pobierania.setText("Download for - *{}".format(x))
 
 
@@ -432,10 +499,12 @@ class SentinelOpenDialog(QtWidgets.QDialog, FORM_CLASS):
 
 
     def download(self):
-        print('download(self)')
+        print('Call the download function')
+        print('Wywołaj funkcję pobierania')
         if not self.logged_in:
             # Display a message indicating the user needs to log in
             QtWidgets.QMessageBox.warning(self, 'Attention', 'Log in before downloading.')
+            QtWidgets.QMessageBox.warning(self, 'Uwaga', 'Zaloguj się przed rozpoczęciem pobierania.')
             return
 
 
@@ -449,13 +518,19 @@ class SentinelOpenDialog(QtWidgets.QDialog, FORM_CLASS):
 
         if layer.geometryType() != QgsWkbTypes.PolygonGeometry:
             print('Only in GeoJSON format from map. The selected layer does not contain polygons. Choose a layer with polygons.')
-            QtWidgets.QMessageBox.warning(self, 'Attention', f'1 WARNING: Only in GeoJSON format from map. The selected layer does not contain polygons. Choose a layer with polygons. (not a GeoJSON file - you can load a *Shp file alongside)')
+            print(                "Tylko w formacie GeoJSON z mapy. Wybrana warstwa nie zawiera wielokątów. Wybierz warstwę zawierającą wielokąty.")
+
+            QtWidgets.QMessageBox.warning(self, 'Attention', f'WARNING: Only in GeoJSON format from map. The selected layer does not contain polygons. Choose a layer with polygons. (not a GeoJSON file - you can load a *Shp file alongside)')
+            QtWidgets.QMessageBox.warning(self, 'Uwaga',  f'OSTRZEŻENIE: Tylko w formacie GeoJSON z mapy. Wybrana warstwa nie zawiera wielokątów. Wybierz warstwę zawierającą wielokąty. (nie jest to plik GeoJSON - możesz załadować plik *Shp obok)')
 
             return
 
         if layer.featureCount() == 0:
+
             print('Only in GeoJSON format from map')
-            QtWidgets.QMessageBox.warning(self, 'Attention', f'2 WARNING: Only in GeoJSON format from map. The selected layer does not contain polygons. Choose a layer with polygons. (not a GeoJSON file - you can load a *Shp file alongside)')
+            print('Tylko w formacie GeoJSON z mapy')
+            QtWidgets.QMessageBox.warning(self, 'Attention', f'WARNING: Only in GeoJSON format from map. The selected layer does not contain polygons. Choose a layer with polygons. (not a GeoJSON file - you can load a *Shp file alongside)')
+            QtWidgets.QMessageBox.warning(self, 'Uwaga', f'OSTRZEŻENIE: Tylko w formacie GeoJSON z mapy. Wybrana warstwa nie zawiera wielokątów. Wybierz warstwę zawierającą wielokąty. (nie jest to plik GeoJSON - możesz załadować plik *Shp obok)')
 
             return
 
@@ -470,7 +545,7 @@ class SentinelOpenDialog(QtWidgets.QDialog, FORM_CLASS):
         start_date = self.da1.date().toPyDate()
         # # end_date = date.today()
         end_date = self.da2.date().toPyDate()
-        print('okej')
+
         # # Wyszukaj produkty Sentinel-2 odpowiadające zdefiniowanym kryteriom
         products_0 = self.api.query(footprint_wkt,
                                date=(start_date, end_date),
@@ -485,8 +560,9 @@ class SentinelOpenDialog(QtWidgets.QDialog, FORM_CLASS):
         print(identyfikatory_produktow)
         print(len(identyfikatory_produktow))
         # Changing the message:
-        print('ok')
+
         QtWidgets.QMessageBox.warning(self, 'Attention', f'WARNING: {len(identyfikatory_produktow)} satellite scene(s) have been located for the selected spectral band.')
+        QtWidgets.QMessageBox.warning(self, 'Uwaga', f'OSTRZEŻENIE: Znaleziono {len(identyfikatory_produktow)} scen(y) satelitarne dla wybranego pasma spektralnego.')
 
         # Iteracja przez wszystkie produkty w products_0
         z = 0
@@ -497,9 +573,10 @@ class SentinelOpenDialog(QtWidgets.QDialog, FORM_CLASS):
             # to jest po to żeby sprawdzić czy foto jest offline czy online
             product_info = self.api.get_product_odata(identyfikator_produktu)
 
-            print(product_info)
+            #print(product_info)
             is_online = product_info['Online']
             print("Connection status is: " + str(is_online) + ", please open the Python console in QGIS to learn more.")
+            print("Status połączenia to: " + str(is_online) + ", proszę otworzyć konsolę Pythona w QGIS, aby dowiedzieć się więcej.")
 
             #z += 1
             #print('Przejście - for nr 1: ' + str(z))
@@ -510,11 +587,10 @@ class SentinelOpenDialog(QtWidgets.QDialog, FORM_CLASS):
                 print('\n')
                 print('\n')
                 print('\n')
+                print("Now I will be downloading: " + informacje_o_produkcie['title'])
                 print('Teraz będę pobierać: ' + informacje_o_produkcie['title'])
                 QtWidgets.QMessageBox.warning(self, 'Attention', "Now I will download. Please click 'OK' and wait for the program to start downloading the image. Even if there's no immediate response, please wait patiently.")
-
-
-
+                QtWidgets.QMessageBox.warning(self, 'Uwaga', "Teraz rozpocznę pobieranie. Proszę kliknąć 'OK' i czekać, aż program rozpocznie pobieranie obrazu. Nawet jeśli nie ma natychmiastowej odpowiedzi, proszę cierpliwie czekać.")
 
                 # Pobranie produktów na podstawie informacji o produkcie
                 self.products = self.api.query(footprint_wkt,
@@ -544,7 +620,9 @@ class SentinelOpenDialog(QtWidgets.QDialog, FORM_CLASS):
 
 
                     if not selected_bands:
+                        print('No channels selected for download.')
                         print('Nie wybrano żadnych kanałów do pobrania.')
+                        QtWidgets.QMessageBox.warning(self, 'Attention', 'The band for download has not been selected.')
                         QtWidgets.QMessageBox.warning(self, 'Attention', 'The band for download have not been selected.')
                         return
 
@@ -558,19 +636,21 @@ class SentinelOpenDialog(QtWidgets.QDialog, FORM_CLASS):
 
 
                 if not s3:
+                    print('No files to download.')
                     print('Brak plików do pobrania.')
                     return
 
                 print(s3[:])
 
                 output_dir = self.q7.text()
-                print('test')
                 print(output_dir)
 
-                # if self.OPEN.isChecked():
-                #     self.open_file(output_dir)
+                if self.OPEN.isChecked():
+                    self.open_file(output_dir)
 
-                print('Rozpoczenie pobierania')
+                # print('xd')
+                # print(f"s3: {s3}")
+                # print(f"output_dir: {output_dir}")
                 self.download_band(s3, output_dir)
 
 
