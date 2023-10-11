@@ -123,14 +123,16 @@ class SentinelOpenDialog(QtWidgets.QDialog, FORM_CLASS):
         self.process = None
 
         self.python.clicked.connect(self.open_python_window)  # Użyj nowej metody
+        self.reload.clicked.connect(self.populateLayerComboBox)
+
 
 
     def open_python_window(self):
-        print("O kurczę, otwórz tę konsolę Pythona! Ta wtyczka Sentinel2 Solo Band jest jak mistrz kamuflażu wśród programów QGIS. Złap mnie, jeśli potrafisz!")
-        print("Oh my goodness, open that Python console! The Sentinel2 Solo Band plugin is like a master of disguise among QGIS programs. Catch me if you can!")
 
         # Otwórz konsolę Pythona w QGIS
         iface.actionShowPythonDialog().trigger()
+        print("O kurczę, otwórz tę konsolę Pythona! Ta wtyczka Sentinel2 Solo Band jest jak mistrz kamuflażu wśród programów QGIS. Złap mnie, jeśli potrafisz!")
+        print("Oh my goodness, open that Python console! The Sentinel2 Solo Band plugin is like a master of disguise among QGIS programs. Catch me if you can!")
 
     def choose_directory(self):
         dialog = QFileDialog(self)
@@ -332,6 +334,19 @@ class SentinelOpenDialog(QtWidgets.QDialog, FORM_CLASS):
             print("Plik SHP przekonwertowany na GeoJSON:", output_geojson_path)
             QtWidgets.QMessageBox.warning(self, 'Uwaga', f'Plik SHP przekonwertowany na GeoJSON: {output_geojson_path}')
 
+            # output_geojson_path = "ścieżka/do/pliku.geojson"  # Zastąp to odpowiednią ścieżką
+            #
+            # message = f"SHP file converted to GeoJSON: {output_geojson_path}\n" \
+            #           f"Plik SHP przekonwertowany na GeoJSON: {output_geojson_path}"
+            #
+            # message_box = QtWidgets.QMessageBox()
+            # message_box.setWindowTitle('Attention / Uwaga')
+            # message_box.setWindowIcon(
+            #     QtWidgets.QApplication.style().standardIcon(QtWidgets.QStyle.SP_MessageBoxInformation))
+            # message_box.setIcon(QtWidgets.QMessageBox.Information)
+            # message_box.setText(message)
+            # message_box.exec_()
+
             # Wczytaj nową warstwę GeoJSON do QGIS
             new_layer = QgsVectorLayer(output_geojson_path, f"New_GeoJSON_{index}", "ogr")
 
@@ -420,18 +435,32 @@ class SentinelOpenDialog(QtWidgets.QDialog, FORM_CLASS):
             self.q4.setText("Connection successful. The plugin won't verify password compatibility if you've entered it incorrectly; it's best to restart the plugin. We don't collect login data. If you want to see login and image retrieval details, open a Python window in QGIS.")
             self.q44.setText("Połączenie udane. Wtyczka nie sprawdzi zgodności hasła, jeśli zostało wprowadzone nieprawidłowo; najlepiej jest zrestartować wtyczkę. Nie zbieramy danych logowania. Jeśli chcesz zobaczyć szczegóły logowania i pobierania obrazów, otwórz okno Pythona w QGIS.")
 
-            #Tworzenie komunikatu
-            #message_box = QtWidgets.QMessageBox()
-            #message_box.setWindowTitle('Login')
-            #message_box.setIcon(QtWidgets.QMessageBox.Information)
-
-            QtWidgets.QMessageBox.warning(self, 'Login', "Connection successful. The plugin won't verify password compatibility if you've entered it incorrectly; it's best to restart the plugin. We don't collect login data.")
-            QtWidgets.QMessageBox.warning(self, 'Logowanie', "Połączenie udane. Wtyczka nie będzie sprawdzać zgodności hasła, jeśli zostało wprowadzone nieprawidłowo; najlepiej jest zrestartować wtyczkę. Nie zbieramy danych logowania.")
-
+            # #Tworzenie komunikatu
+            # message_box = QtWidgets.QMessageBox()
+            # message_box.setWindowTitle('Login')
+            # message_box.setIcon(QtWidgets.QMessageBox.Information)
+            #
+            # QtWidgets.QMessageBox.warning(self, 'Login', "Connection successful. The plugin won't verify password compatibility if you've entered it incorrectly; it's best to restart the plugin. We don't collect login data.")
+            # QtWidgets.QMessageBox.warning(self, 'Logowanie', "Połączenie udane. Wtyczka nie będzie sprawdzać zgodności hasła, jeśli zostało wprowadzone nieprawidłowo; najlepiej jest zrestartować wtyczkę. Nie zbieramy danych logowania.")
+            #
             # message_box.setStandardButtons(QtWidgets.QMessageBox.Ok)
             # message_box.exec_()
 
-        #self.api = SentinelAPI('fishfounder', 'LifeBelowWather1123', 'https://scihub.copernicus.eu/dhus')
+            # Tworzenie komunikatu
+            message_box = QtWidgets.QMessageBox()
+            message_box.setWindowTitle('Login')
+            message_box.setWindowIcon(QtWidgets.QApplication.style().standardIcon(QtWidgets.QStyle.SP_ArrowRight))
+            message_box.setIcon(QtWidgets.QMessageBox.Information)
+
+            message_box.setText(
+                "Connection successful. The plugin won't verify password compatibility if you've entered it incorrectly; it's best to restart the plugin. We don't collect login data.")
+            message_box.setInformativeText(
+                "Połączenie udane. Wtyczka nie będzie sprawdzać zgodności hasła, jeśli zostało wprowadzone nieprawidłowo; najlepiej jest zrestartować wtyczkę. Nie zbieramy danych logowania.")
+
+            message_box.setStandardButtons(QtWidgets.QMessageBox.Ok)
+            message_box.exec_()
+
+            #self.api = SentinelAPI('fishfounder', 'LifeBelowWather1123', 'https://scihub.copernicus.eu/dhus')
             print('Login successful.')
             print('logowanie okej')
 
@@ -503,22 +532,48 @@ class SentinelOpenDialog(QtWidgets.QDialog, FORM_CLASS):
         print('Wywołaj funkcję pobierania')
         if not self.logged_in:
             # Display a message indicating the user needs to log in
-            QtWidgets.QMessageBox.warning(self, 'Attention', 'Log in before downloading.')
-            QtWidgets.QMessageBox.warning(self, 'Uwaga', 'Zaloguj się przed rozpoczęciem pobierania.')
+            # QtWidgets.QMessageBox.warning(self, 'Attention', 'Log in before downloading.')
+            # QtWidgets.QMessageBox.warning(self, 'Uwaga', 'Zaloguj się przed rozpoczęciem pobierania.')
+            message = "Log in before downloading.\nZaloguj się przed rozpoczęciem pobierania."
+
+            message_box = QtWidgets.QMessageBox()
+            message_box.setWindowTitle('Attention / Uwaga')
+            message_box.setWindowIcon(
+                QtWidgets.QApplication.style().standardIcon(QtWidgets.QStyle.SP_MessageBoxWarning))
+            message_box.setIcon(QtWidgets.QMessageBox.Warning)
+            message_box.setText(message)
+            message_box.exec_()
+
             return
 
+        selected_layer_name = self.cblista.currentText()
+
+        if selected_layer_name not in QgsProject.instance().mapLayers():
+            # Jeśli wybrana warstwa nie istnieje w projektach QGIS, wyświetl komunikat
+            message = "The selected layer does not exist in the QGIS project.\nWybrana warstwa nie istnieje w projekcie QGIS."
+
+            message_box = QtWidgets.QMessageBox()
+            message_box.setWindowTitle('Attention / Uwaga')
+            message_box.setWindowIcon(
+                QtWidgets.QApplication.style().standardIcon(QtWidgets.QStyle.SP_MessageBoxWarning))
+            message_box.setIcon(QtWidgets.QMessageBox.Warning)
+            message_box.setText(message)
+            message_box.exec_()
+
+            return
+
+        # Jeśli warstwa istnieje, kontynuuj z operacją pobierania
+        layer = QgsProject.instance().mapLayersByName(selected_layer_name)[0]
+        # selected_layer_name = self.cblista.currentText()
+        # layer = QgsProject.instance().mapLayersByName(selected_layer_name)[0]
 
 
         # selected_layer_name = self.cblista.currentText()
         # layer = QgsProject.instance().mapLayersByName(selected_layer_name)[0]
 
-
-        selected_layer_name = self.cblista.currentText()
-        layer = QgsProject.instance().mapLayersByName(selected_layer_name)[0]
-
         if layer.geometryType() != QgsWkbTypes.PolygonGeometry:
             print('Only in GeoJSON format from map. The selected layer does not contain polygons. Choose a layer with polygons.')
-            print(                "Tylko w formacie GeoJSON z mapy. Wybrana warstwa nie zawiera wielokątów. Wybierz warstwę zawierającą wielokąty.")
+            print("Tylko w formacie GeoJSON z mapy. Wybrana warstwa nie zawiera wielokątów. Wybierz warstwę zawierającą wielokąty.")
 
             QtWidgets.QMessageBox.warning(self, 'Attention', f'WARNING: Only in GeoJSON format from map. The selected layer does not contain polygons. Choose a layer with polygons. (not a GeoJSON file - you can load a *Shp file alongside)')
             QtWidgets.QMessageBox.warning(self, 'Uwaga',  f'OSTRZEŻENIE: Tylko w formacie GeoJSON z mapy. Wybrana warstwa nie zawiera wielokątów. Wybierz warstwę zawierającą wielokąty. (nie jest to plik GeoJSON - możesz załadować plik *Shp obok)')
@@ -561,8 +616,21 @@ class SentinelOpenDialog(QtWidgets.QDialog, FORM_CLASS):
         print(len(identyfikatory_produktow))
         # Changing the message:
 
-        QtWidgets.QMessageBox.warning(self, 'Attention', f'WARNING: {len(identyfikatory_produktow)} satellite scene(s) have been located for the selected spectral band.')
-        QtWidgets.QMessageBox.warning(self, 'Uwaga', f'OSTRZEŻENIE: Znaleziono {len(identyfikatory_produktow)} scen(y) satelitarne dla wybranego pasma spektralnego.')
+        # QtWidgets.QMessageBox.warning(self, 'Attention', f'WARNING: {len(identyfikatory_produktow)} satellite scene(s) have been located for the selected spectral band.')
+        # QtWidgets.QMessageBox.warning(self, 'Uwaga', f'OSTRZEŻENIE: Znaleziono {len(identyfikatory_produktow)} scen(y) satelitarne dla wybranego pasma spektralnego.')
+        num_scenes = len(identyfikatory_produktow)
+        num_scenes = len(identyfikatory_produktow)
+        message = f"WARNING: {num_scenes} satellite scene(s) have been located for the selected spectral band.\n" \
+                  f"OSTRZEŻENIE: Znaleziono {num_scenes} scen(y) satelitarne dla wybranego pasma spektralnego.\n" \
+                  f"AVERTISSEMENT : {num_scenes} scène(s) satellite(s) ont été localisée(s) pour la bande spectrale sélectionnée."
+
+        message_box = QtWidgets.QMessageBox()
+        message_box.setWindowTitle('Attention / Uwaga / Avertissement')
+        message_box.setWindowIcon(
+            QtWidgets.QApplication.style().standardIcon(QtWidgets.QStyle.SP_MessageBoxWarning))
+        message_box.setIcon(QtWidgets.QMessageBox.Warning)
+        message_box.setText(message)
+        message_box.exec_()
 
         # Iteracja przez wszystkie produkty w products_0
         z = 0
@@ -645,8 +713,8 @@ class SentinelOpenDialog(QtWidgets.QDialog, FORM_CLASS):
                 output_dir = self.q7.text()
                 print(output_dir)
 
-                if self.OPEN.isChecked():
-                    self.open_file(output_dir)
+                # if self.OPEN.isChecked():
+                #     self.open_file(output_dir)
 
                 # print('xd')
                 # print(f"s3: {s3}")
