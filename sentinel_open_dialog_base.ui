@@ -64,7 +64,7 @@
      <property name="geometry">
       <rect>
        <x>10</x>
-       <y>290</y>
+       <y>310</y>
        <width>171</width>
        <height>20</height>
       </rect>
@@ -633,14 +633,17 @@ p, li { white-space: pre-wrap; }
     <widget class="QLabel" name="label_20">
      <property name="geometry">
       <rect>
-       <x>450</x>
-       <y>69</y>
-       <width>131</width>
-       <height>21</height>
+       <x>460</x>
+       <y>40</y>
+       <width>81</width>
+       <height>51</height>
       </rect>
      </property>
      <property name="text">
-      <string>Only add *shp</string>
+      <string>Only add *shp or *GeoJSON</string>
+     </property>
+     <property name="wordWrap">
+      <bool>true</bool>
      </property>
     </widget>
     <widget class="QLabel" name="label_21">
@@ -1024,7 +1027,7 @@ p, li { white-space: pre-wrap; }
     </rect>
    </property>
    <property name="text">
-    <string>Sentinel 2 - version 2.1.6</string>
+    <string>Sentinel 2 - version 2.1.7</string>
    </property>
   </widget>
   <widget class="QPushButton" name="python">

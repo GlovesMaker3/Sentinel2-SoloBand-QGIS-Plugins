@@ -548,19 +548,19 @@ class SentinelOpenDialog(QtWidgets.QDialog, FORM_CLASS):
 
         selected_layer_name = self.cblista.currentText()
 
-        if selected_layer_name not in QgsProject.instance().mapLayers():
-            # Jeśli wybrana warstwa nie istnieje w projektach QGIS, wyświetl komunikat
-            message = "The selected layer does not exist in the QGIS project.\nWybrana warstwa nie istnieje w projekcie QGIS."
-
-            message_box = QtWidgets.QMessageBox()
-            message_box.setWindowTitle('Attention / Uwaga')
-            message_box.setWindowIcon(
-                QtWidgets.QApplication.style().standardIcon(QtWidgets.QStyle.SP_MessageBoxWarning))
-            message_box.setIcon(QtWidgets.QMessageBox.Warning)
-            message_box.setText(message)
-            message_box.exec_()
-
-            return
+        # if selected_layer_name not in QgsProject.instance().mapLayers():
+        #     # Jeśli wybrana warstwa nie istnieje w projektach QGIS, wyświetl komunikat
+        #     message = "The selected layer does not exist in the QGIS project.\nWybrana warstwa nie istnieje w projekcie QGIS."
+        #
+        #     message_box = QtWidgets.QMessageBox()
+        #     message_box.setWindowTitle('Attention / Uwaga')
+        #     message_box.setWindowIcon(
+        #         QtWidgets.QApplication.style().standardIcon(QtWidgets.QStyle.SP_MessageBoxWarning))
+        #     message_box.setIcon(QtWidgets.QMessageBox.Warning)
+        #     message_box.setText(message)
+        #     message_box.exec_()
+        #
+        #     return
 
         # Jeśli warstwa istnieje, kontynuuj z operacją pobierania
         layer = QgsProject.instance().mapLayersByName(selected_layer_name)[0]

@@ -4,7 +4,7 @@
 name=Sentinel2 SoloBand
 qgisMinimumVersion=3.0
 description=Sentinel2 SoloBand is a plugin for easily searching for individual bands in Sentinel-2 imagery.
-version=2.1.5
+version=2.1.7
 author=FishFounder
 email=fishfounderstartup@gmail.com
 
@@ -27,6 +27,10 @@ hasProcessingProvider=no
 
 # Uncomment the following line and add your changelog:
 changelog=
+    version 2.1.7 (orange moon)
+        	- Changing the icon, interface, disabling the option to check if the object is selected before downloading the image.
+    version 2.1.6 (pink moon)
+        	- Changing the icon, interface, adding a button to reload layers on the map, reducing the number of sharpening, intentionally breaking folder opening for testing purposes, improving messages.
     version 2.1.5 (green moon)
         	- Changing the icon (changing the icon suggests a newer application), interface, and metadata. Additionally, improving the website by adding translations for the plugin in Polish and English in both the console and notifications. Adding a Python console button and fixing folder opening.The 'Add SHP' button has been fixed to automatically check the file format and avoid displaying a crushing error.
     version 2.1.4 (red moon)
