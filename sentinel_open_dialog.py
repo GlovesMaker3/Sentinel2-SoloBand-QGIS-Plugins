@@ -38,7 +38,7 @@ from qgis.PyQt.QtCore import QVariant
 from PyQt5.QtCore import QDate
 from qgis.core import QgsVectorLayer
 from qgis.utils import iface
-
+from tqdm import tqdm
 
 
 
@@ -126,6 +126,12 @@ class SentinelOpenDialog(QtWidgets.QDialog, FORM_CLASS):
         self.reload.clicked.connect(self.populateLayerComboBox)
 
 
+        self.progress_bar.setValue(0)  # Ustaw wartość początkową na 0
+
+
+
+
+
 
     def open_python_window(self):
 
@@ -146,10 +152,6 @@ class SentinelOpenDialog(QtWidgets.QDialog, FORM_CLASS):
             self.q7.setText(self.output_dir)  # Ustawienie ścieżki jako tekst przycisku
             print("Selected directory:", self.output_dir)
             print("Wybrany katalog:", self.output_dir)
-
-
-
-
 
 
 
@@ -190,83 +192,6 @@ class SentinelOpenDialog(QtWidgets.QDialog, FORM_CLASS):
 
 
 
-    # def process_shp_to_geojson_lista(self, shp_path):
-    #     shp_driver = ogr.GetDriverByName('ESRI Shapefile')
-    #     shp_dataset = shp_driver.Open(shp_path)
-    #
-    #     if shp_dataset:
-    #         shp_layer = shp_dataset.GetLayer()
-    #         shp_spatial_ref = shp_layer.GetSpatialRef()
-    #
-    #         # Sprawdź, czy warstwa nie jest już w WGS84
-    #         if shp_spatial_ref and shp_spatial_ref.GetAttrValue("AUTHORITY", 1) != "4326":
-    #             wgs84_spatial_ref = osr.SpatialReference()
-    #             wgs84_spatial_ref.ImportFromEPSG(4326)  # Kod EPSG dla WGS84
-    #             coord_transform = osr.CoordinateTransformation(shp_spatial_ref, wgs84_spatial_ref)
-    #         else:
-    #             coord_transform = None
-    #
-    #         geojson_driver = ogr.GetDriverByName('GeoJSON')
-    #
-    #         index = 1
-    #         while True:
-    #             output_geojson_path = shp_path.replace('.shp', f'_{index}.geojson')
-    #             if not os.path.exists(output_geojson_path):
-    #                 break
-    #             index += 1
-    #
-    #         geojson_dataset = geojson_driver.CreateDataSource(output_geojson_path)
-    #         geojson_layer = geojson_dataset.CreateLayer('', srs=wgs84_spatial_ref, geom_type=ogr.wkbPolygon)
-    #
-    #         for feature in shp_layer:
-    #             geom = feature.GetGeometryRef()
-    #             if coord_transform:
-    #                 geom.Transform(coord_transform)
-    #
-    #             new_feature = ogr.Feature(geojson_layer.GetLayerDefn())
-    #             new_feature.SetGeometry(geom.Clone())
-    #             geojson_layer.CreateFeature(new_feature)
-    #             new_feature = None
-    #
-    #         geojson_dataset = None
-    #         shp_dataset = None
-    #
-    #         print("SHP file converted to GeoJSON:", output_geojson_path)
-    #         QtWidgets.QMessageBox.warning(self, 'Attention', f'SHP file converted to GeoJSON: {output_geojson_path}')
-    #
-    #         print("Plik SHP przekonwertowany na GeoJSON:", output_geojson_path)
-    #         QtWidgets.QMessageBox.warning(self, 'Uwaga', f'Plik SHP przekonwertowany na GeoJSON: {output_geojson_path}')
-    #
-    #         # Wczytaj nową warstwę GeoJSON do QGIS
-    #         new_layer = QgsVectorLayer(output_geojson_path, f"New_GeoJSON_{index}", "ogr")
-    #
-    #         if new_layer.isValid():
-    #             QgsProject.instance().addMapLayer(new_layer)
-    #             self.cblista.addItem(new_layer.name())  # Dodaj nową warstwę do comboboxa
-    #             print("New layer added to QGIS:", new_layer.name())
-    #             print("Nowa warstwa dodana do QGIS:", new_layer.name())
-    #         else:
-    #             print("Failed to load the new layer into QGIS.")
-    #             print("Nie udało się wczytać nowej warstwy do QGIS.")
-    #
-    #     else:
-    #         print("Failed to open SHP file.")
-    #         print("Nie udało się otworzyć pliku SHP.")
-
-
-#WYBIERANIE DLA 3 KROPECZEK
-    # def choose_directory_1(self):
-    #     dialog = QFileDialog(self)
-    #     dialog.setFileMode(QFileDialog.ExistingFile)
-    #     dialog.setNameFilter("Shapefiles (*.shp);;GeoJSON files (*.geojson)")
-    #
-    #     selected_file, _ = dialog.getOpenFileName(self)
-    #
-    #     if selected_file:
-    #         if selected_file.lower().endswith('.shp'):
-    #             self.process_shp_to_geojson(selected_file)
-    #         else:
-    #             self.process_geojson(selected_file)
 
     def choose_directory_1(self):
         dialog = QFileDialog(self)
@@ -403,11 +328,11 @@ class SentinelOpenDialog(QtWidgets.QDialog, FORM_CLASS):
                 print("Failed to load the new GeoJSON layer into QGIS.")
                 print("Nie udało się wczytać nowej warstwy GeoJSON do QGIS.")
         else:
-            print("The provided file is not in GeoJSON format. Please provide a file in GeoJSON format.")
-            QtWidgets.QMessageBox.warning(self, 'Attention', 'The provided file is not in GeoJSON format. Please provide a file in GeoJSON format.')
+            print("The provided file is not in GeoJSON format. Please provide a file in *shp or GeoJSON format.")
+            QtWidgets.QMessageBox.warning(self, 'Attention', 'The provided file is not in *shp or GeoJSON format. Please provide a file in GeoJSON format.')
 
-            print("Podany plik nie jest w formacie GeoJSON. Proszę podać plik w formacie GeoJSON.")
-            QtWidgets.QMessageBox.warning(self, 'Uwaga', 'Podany plik nie jest w formacie GeoJSON. Proszę podać plik w formacie GeoJSON.')
+            print("Podany plik nie jest w formacie *shp lub GeoJSON. Proszę podać plik w formacie GeoJSON.")
+            QtWidgets.QMessageBox.warning(self, 'Uwaga', 'Podany plik nie jest w formacie *shp lub GeoJSON. Proszę podać plik w formacie GeoJSON.')
 
 
 
@@ -452,10 +377,8 @@ class SentinelOpenDialog(QtWidgets.QDialog, FORM_CLASS):
             message_box.setWindowIcon(QtWidgets.QApplication.style().standardIcon(QtWidgets.QStyle.SP_ArrowRight))
             message_box.setIcon(QtWidgets.QMessageBox.Information)
 
-            message_box.setText(
-                "Connection successful. The plugin won't verify password compatibility if you've entered it incorrectly; it's best to restart the plugin. We don't collect login data.")
-            message_box.setInformativeText(
-                "Połączenie udane. Wtyczka nie będzie sprawdzać zgodności hasła, jeśli zostało wprowadzone nieprawidłowo; najlepiej jest zrestartować wtyczkę. Nie zbieramy danych logowania.")
+            message_box.setText("Connection successful. The plugin won't verify password compatibility if you've entered it incorrectly; it's best to restart the plugin. We don't collect login data.")
+            message_box.setInformativeText("Połączenie udane. Wtyczka nie będzie sprawdzać zgodności hasła, jeśli zostało wprowadzone nieprawidłowo; najlepiej jest zrestartować wtyczkę. Nie zbieramy danych logowania.")
 
             message_box.setStandardButtons(QtWidgets.QMessageBox.Ok)
             message_box.exec_()
@@ -481,17 +404,36 @@ class SentinelOpenDialog(QtWidgets.QDialog, FORM_CLASS):
 
 
 
+    # def open_file(self, output_dir):
+    #     try:
+    #         if os.path.exists(output_dir):
+    #             # Zamień ukośniki wsteczne na zwykłe ukośniki
+    #             output_dir = output_dir.replace('/', '\\')
+    #             print(f"Opening directory: {output_dir}")
+    #             if sys.platform == 'win32':
+    #                 subprocess.Popen(['explorer', output_dir], shell=True)
+    #             elif sys.platform == 'darwin':
+    #                 subprocess.Popen(['open', output_dir])
+    #             else:
+    #                 subprocess.Popen(['xdg-open', output_dir])
+    #             print("Directory opened successfully.")
+    #         else:
+    #             print(f'Folder does not exist: {output_dir}')
+    #     except Exception as e:
+    #         print(f"An error occurred while opening the directory: {str(e)}")
+
     def open_file(self, output_dir):
         try:
             if os.path.exists(output_dir):
-                # Zamień ukośniki wsteczne na zwykłe ukośniki
-                output_dir = output_dir.replace('/', '\\')
-                print(f"Opening directory: {output_dir}")
+                # Sprawdź bieżący system operacyjny
                 if sys.platform == 'win32':
+                    # Zamień ukośniki wsteczne na zwykłe ukośniki na Windows
+                    output_dir = output_dir.replace('/', '\\')
+                    print(f"Opening directory: {output_dir}")
                     subprocess.Popen(['explorer', output_dir], shell=True)
-                elif sys.platform == 'darwin':
-                    subprocess.Popen(['open', output_dir])
                 else:
+                    # Pozostałe systemy operacyjne używają ukośników wstecznych
+                    print(f"Opening directory: {output_dir}")
                     subprocess.Popen(['xdg-open', output_dir])
                 print("Directory opened successfully.")
             else:
@@ -503,12 +445,16 @@ class SentinelOpenDialog(QtWidgets.QDialog, FORM_CLASS):
 
 
     def download_band(self, s3, output_dir):
-        print("Rozpoczęto pobieranie. Proszę czekać, proces może potrwać chwilę.")
-        print("Downloading has started. Please wait, the process may take a moment.")
+
         n = 0
+        total_files = len(s3)
         for x in s3:
             n += 1
             print('_2_: ' + str(n))
+
+            progress = n / total_files * 100
+
+
             path_filter = make_path_filter("*{}".format(x))
             print(path_filter)
 
@@ -516,7 +462,19 @@ class SentinelOpenDialog(QtWidgets.QDialog, FORM_CLASS):
             print("Output path - {}".format(output_dir))
             print("Pobieranie kanałów spektralnych - {}".format(s3))
             print("Ścieżka zapisu - {}".format(output_dir))
+            print('\n')
+            print('\n')
+            print("Rozpoczęto pobieranie. Proszę czekać, proces może potrwać chwilę.")
+            print("Downloading has started. Please wait, the process may take a moment.")
+
+            # Otwórz konsolę Pythona w QGIS
+            # Sprawdź, czy konsola jest otwarta, i otwórz ją, jeśli nie
+            # Otwórz konsolę Pythona w QGIS, jeśli jest zamknięta
+            if not iface.actionShowPythonDialog().isVisible():
+                iface.actionShowPythonDialog().trigger()
+
             self.api.download_all(self.products, directory_path=output_dir, nodefilter=path_filter)
+            self.progress_bar.setValue(progress)
 
             print('\n')
             print("Download for - *{}".format(x))
@@ -525,7 +483,40 @@ class SentinelOpenDialog(QtWidgets.QDialog, FORM_CLASS):
 
 
 
-
+    # def download_band(self, s3, output_dir):
+    #     print("Rozpoczęto pobieranie. Proszę czekać, proces może potrwać chwilę.")
+    #     print("Downloading has started. Please wait, the process may take a moment.")
+    #     n = 0
+    #     total_files = len(s3)
+    #     for x in s3:
+    #         n += 1
+    #         print('_2_: ' + str(n))
+    #         path_filter = make_path_filter("*{}".format(x))
+    #         print(path_filter)
+    #
+    #         print("Downloading spectral channels - {}".format(s3))
+    #         print("Output path - {}".format(output_dir))
+    #         print("Pobieranie kanałów spektralnych - {}".format(s3))
+    #         print("Ścieżka zapisu - {}".format(output_dir))
+    #
+    #         Path_1 = r'{}'.format(output_dir)
+    #         print(Path_1)
+    #
+    #         # Oblicz postęp na podstawie ilości pobranych plików
+    #         progress = n / total_files * 100
+    #         progress = n / total_files * 100
+    #         self.progress_bar.setValue(progress)
+    #         # Aktualizuj pasek postępu
+    #         with tqdm(total=total_files, desc="Pobieranie pliku", initial=n, position=n) as progress_bar:
+    #             # Tutaj będziesz używać rzeczywistych funkcji pobierania z biblioteki Sentinelsat
+    #             self.api.download_all(self.products, directory_path=Path_1, nodefilter=path_filter)
+    #             # Aktualizuj pasek postępu
+    #             progress_bar.update(1)
+    #
+    #         print('\n')
+    #         print("Download for - *{}".format(x))
+    #         print("Pobieranie dla - *{}".format(x))
+    #         self.Status_pobierania.setText("Download for - *{}".format(x))
 
     def download(self):
         print('Call the download function')
@@ -538,8 +529,7 @@ class SentinelOpenDialog(QtWidgets.QDialog, FORM_CLASS):
 
             message_box = QtWidgets.QMessageBox()
             message_box.setWindowTitle('Attention / Uwaga')
-            message_box.setWindowIcon(
-                QtWidgets.QApplication.style().standardIcon(QtWidgets.QStyle.SP_MessageBoxWarning))
+            message_box.setWindowIcon(QtWidgets.QApplication.style().standardIcon(QtWidgets.QStyle.SP_MessageBoxWarning))
             message_box.setIcon(QtWidgets.QMessageBox.Warning)
             message_box.setText(message)
             message_box.exec_()
@@ -618,7 +608,7 @@ class SentinelOpenDialog(QtWidgets.QDialog, FORM_CLASS):
 
         # QtWidgets.QMessageBox.warning(self, 'Attention', f'WARNING: {len(identyfikatory_produktow)} satellite scene(s) have been located for the selected spectral band.')
         # QtWidgets.QMessageBox.warning(self, 'Uwaga', f'OSTRZEŻENIE: Znaleziono {len(identyfikatory_produktow)} scen(y) satelitarne dla wybranego pasma spektralnego.')
-        num_scenes = len(identyfikatory_produktow)
+        #num_scenes = len(identyfikatory_produktow)
         num_scenes = len(identyfikatory_produktow)
         message = f"WARNING: {num_scenes} satellite scene(s) have been located for the selected spectral band.\n" \
                   f"OSTRZEŻENIE: Znaleziono {num_scenes} scen(y) satelitarne dla wybranego pasma spektralnego.\n" \
@@ -657,8 +647,19 @@ class SentinelOpenDialog(QtWidgets.QDialog, FORM_CLASS):
                 print('\n')
                 print("Now I will be downloading: " + informacje_o_produkcie['title'])
                 print('Teraz będę pobierać: ' + informacje_o_produkcie['title'])
-                QtWidgets.QMessageBox.warning(self, 'Attention', "Now I will download. Please click 'OK' and wait for the program to start downloading the image. Even if there's no immediate response, please wait patiently.")
-                QtWidgets.QMessageBox.warning(self, 'Uwaga', "Teraz rozpocznę pobieranie. Proszę kliknąć 'OK' i czekać, aż program rozpocznie pobieranie obrazu. Nawet jeśli nie ma natychmiastowej odpowiedzi, proszę cierpliwie czekać.")
+                # QtWidgets.QMessageBox.warning(self, 'Attention', "Now I will download. Please click 'OK' and wait for the program to start downloading the image. Even if there's no immediate response, please wait patiently.")
+                # QtWidgets.QMessageBox.warning(self, 'Uwaga', "Teraz rozpocznę pobieranie. Proszę kliknąć 'OK' i czekać, aż program rozpocznie pobieranie obrazu. Nawet jeśli nie ma natychmiastowej odpowiedzi, proszę cierpliwie czekać.")
+
+                message = "Now I will download. Please click 'OK' and wait for the program to start downloading the image. Even if there's no immediate response, please wait patiently."
+                message_pl = "Teraz rozpocznę pobieranie. Proszę kliknąć 'OK' i czekać, aż program rozpocznie pobieranie obrazu. Nawet jeśli nie ma natychmiastowej odpowiedzi, proszę cierpliwie czekać."
+
+                messageBox = QtWidgets.QMessageBox()
+                messageBox.setIcon(QtWidgets.QMessageBox.Warning)
+                messageBox.setWindowTitle('Attention / Uwaga')
+                messageBox.setText(message)
+                messageBox.setInformativeText(message_pl)
+                messageBox.addButton(QtWidgets.QMessageBox.Ok)
+                messageBox.exec_()
 
                 # Pobranie produktów na podstawie informacji o produkcie
                 self.products = self.api.query(footprint_wkt,
@@ -690,8 +691,19 @@ class SentinelOpenDialog(QtWidgets.QDialog, FORM_CLASS):
                     if not selected_bands:
                         print('No channels selected for download.')
                         print('Nie wybrano żadnych kanałów do pobrania.')
-                        QtWidgets.QMessageBox.warning(self, 'Attention', 'The band for download has not been selected.')
-                        QtWidgets.QMessageBox.warning(self, 'Attention', 'The band for download have not been selected.')
+                        # QtWidgets.QMessageBox.warning(self, 'Attention', 'The band for download has not been selected.')
+                        # QtWidgets.QMessageBox.warning(self, 'Attention', 'The band for download have not been selected.')
+                        message = "The band for download has not been selected."
+                        message_pl = "Nie wybrano pasma do pobrania."
+
+                        messageBox = QtWidgets.QMessageBox()
+                        messageBox.setIcon(QtWidgets.QMessageBox.Warning)
+                        messageBox.setWindowTitle('Attention / Uwaga')
+                        messageBox.setText(message)
+                        messageBox.setInformativeText(message_pl)
+                        messageBox.addButton(QtWidgets.QMessageBox.Ok)
+                        messageBox.exec_()
+
                         return
 
 
@@ -713,18 +725,29 @@ class SentinelOpenDialog(QtWidgets.QDialog, FORM_CLASS):
                 output_dir = self.q7.text()
                 print(output_dir)
 
+####################### OPEN ################################
                 # if self.OPEN.isChecked():
                 #     self.open_file(output_dir)
+#######################################################
 
-                # print('xd')
-                # print(f"s3: {s3}")
-                # print(f"output_dir: {output_dir}")
+                print('xd')
+                print(f"s3: {s3}")
+                print(f"output_dir: {output_dir}")
                 self.download_band(s3, output_dir)
 
 
-            # else:
-            #     QtWidgets.QMessageBox.warning(self, 'Attention','The scene is offline or no scenes were found to download')
+            else:
+                # QtWidgets.QMessageBox.warning(self, 'Attention','The scene is offline or no scenes were found to download')
+                message = "The scene is offline or no scenes were found to download."
+                message_pl = "Scena jest niedostępna lub nie znaleziono scen do pobrania."
 
+                messageBox = QtWidgets.QMessageBox()
+                messageBox.setIcon(QtWidgets.QMessageBox.Warning)
+                messageBox.setWindowTitle('Attention / Uwaga')
+                messageBox.setText(message)
+                messageBox.setInformativeText(message_pl)
+                messageBox.addButton(QtWidgets.QMessageBox.Ok)
+                messageBox.exec_()
 
             # Resetowanie listy s3 dla kolejnego produktu
             s3 = []
