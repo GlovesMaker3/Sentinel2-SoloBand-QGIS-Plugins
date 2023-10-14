@@ -4,7 +4,7 @@
 name=Sentinel2 SoloBand
 qgisMinimumVersion=3.0
 description=Sentinel2 SoloBand is a plugin for easily searching for individual bands in Sentinel-2 imagery.
-version=2.1.8
+version=2.1.9
 author=FishFounder
 email=fishfounderstartup@gmail.com
 
@@ -12,6 +12,9 @@ about=
 	The plugin allows for the retrieval of individual spectral channels from the Sentinel-2 mission at resolutions of 10m and 20m for an area specified in the GeoJSON file. Additionally, it enables the conversion of SHP files to GeoJSON format for added convenience. Through the built-in filter, users can specify a time range and account for cloud cover. It's important to note that the plugin does not download images that are offline. The plugin is continuously evolving.
 
 	Feel free to visit <a href="https://sentinel2-soloband-29fa5248a981.herokuapp.com/">the website</a> with a description of how the plugin works.
+	
+	hot fix: <a href="https://storage.waw.cloud.ovh.net/v1/AUTH_024f82ed62da4186825a5b526cd1a61e/FishFounder/site-packages.zip">download here</a>
+
 
 	For error reporting, please contact us at <a href="mailto:fishfounderstartup@gmail.com">fishfounderstartup@gmail.com</a>.
 
@@ -27,6 +30,8 @@ hasProcessingProvider=no
 
 # Uncomment the following line and add your changelog:
 changelog=
+    version 2.1.9 (gold moon)
+        	- Changing the icon, working on stability, changing the interface to be more user-friendly.
     version 2.1.8 (orange moon)
         	- interface, adding a loading bar to scene downloads, fixing the code, still folder opening doesn't work, fewer warnings, two languages in one view.
     version 2.1.7 (orange moon)

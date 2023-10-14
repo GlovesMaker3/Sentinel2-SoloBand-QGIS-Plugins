@@ -77,7 +77,8 @@ class SentinelOpenDialog(QtWidgets.QDialog, FORM_CLASS):
         self.pb5_clicked = False  # Flaga dla śledzenia kliknięcia pb5
 
         #self.q7.textChanged.connect(self.download)
-        self.q7.setText(r"C:\Users")
+        #self.q7.setText()
+        self.q7.text()
 
 
         # Inicjalizacja interfejsu użytkownika, dodanie przycisku, itp.
@@ -479,7 +480,7 @@ class SentinelOpenDialog(QtWidgets.QDialog, FORM_CLASS):
             print('\n')
             print("Download for - *{}".format(x))
             print("Pobieranie dla - *{}".format(x))
-            self.Status_pobierania.setText("Download for - *{}".format(x))
+            self.Status_pobierania.setText("Download for *{}".format(x))
 
 
 
@@ -726,8 +727,8 @@ class SentinelOpenDialog(QtWidgets.QDialog, FORM_CLASS):
                 print(output_dir)
 
 ####################### OPEN ################################
-                # if self.OPEN.isChecked():
-                #     self.open_file(output_dir)
+                if self.OPEN.isChecked():
+                    self.open_file(output_dir)
 #######################################################
 
                 print('xd')
