@@ -1,7 +1,5 @@
-<<<<<<< HEAD
-"# sentinelOpen" 
-=======
 # Sentinel2 SoloBand 
+Sentinel2 SoloBand  [Copernicus Open Access Hub](https://plugins.qgis.org/plugins/sentinel_open/)
 
 Sentinel2 SoloBand is QGIS Plugin from [Copernicus Open Access Hub](https://scihub.copernicus.eu/dhus/#/home)
 
